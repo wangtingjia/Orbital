@@ -8,9 +8,9 @@ export default function Auth() {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
 
-    async function signInWithEmail() {
+    async function signUpWithEmail() {
         setLoading(true)
-        const { user, error } = await supabase.auth.signIn({
+        const { user, error } = await supabase.auth.signUp({
             email: email,
             password: password,
         })
@@ -42,8 +42,8 @@ export default function Auth() {
                     autoCapitalize={'none'} 
                     autoCompleteType={undefined} />
             </View>
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-                <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
+            <View style={styles.verticallySpaced}>
+                <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
             </View>
         </View>
     )
