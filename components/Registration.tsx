@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { Button, Input } from 'react-native-elements'
@@ -6,6 +6,7 @@ import { Button, Input } from 'react-native-elements'
 export default function Auth() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [password2, setPassword2] = useState('')
     const [loading, setLoading] = useState(false)
 
     async function signUpWithEmail() {
@@ -17,6 +18,16 @@ export default function Auth() {
 
         if (error) Alert.alert(error.message)
         setLoading(false)
+    }
+
+    function checkPasswords() {
+        if (password == password2) {
+            signUpWithEmail()
+            console.log("Matches")
+        }
+        else {
+            alert("Passwords do not match")
+        }
     }
 
     return (
@@ -43,7 +54,18 @@ export default function Auth() {
                     autoCompleteType={undefined} />
             </View>
             <View style={styles.verticallySpaced}>
-                <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
+                <Input
+                    label="Confirm Password"
+                    leftIcon={{ type: 'font-awesome', name: 'lock' }}
+                    onChangeText={(text) => setPassword2(text)}
+                    value={password2}
+                    secureTextEntry={true}
+                    placeholder="Confirm Password"
+                    autoCapitalize={'none'} 
+                    autoCompleteType={undefined} />
+            </View>
+            <View style={styles.verticallySpaced}>
+                <Button title="Sign up" disabled={loading} onPress={() => checkPasswords()} />
             </View>
         </View>
     )
