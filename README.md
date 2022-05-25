@@ -1,4 +1,4 @@
-Milestone 1 Submission
+[Milestone 1 Submission
 
 Proposed Level of Achievement: Apollo
 Team Name: SportsBuddy
@@ -122,3 +122,5 @@ Polish up system and fix any outstanding issues
 Technical Proof of Concept
 
 
+]
+https://docs.google.com/document/d/1nAgghsfz-gnuvT9WAE5PK1rFRDPRFI-JWZTaE1GMKro/edit?usp=sharing
