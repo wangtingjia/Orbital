@@ -1,14 +1,17 @@
 import React from 'react'
-import { View, Button } from "react-native";
+import { View, Button, Text } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from './LoginSignupScreen'
 
-const HomePage = () => {
+function HomePage({navigation}){
+  function checking(){
+    //console.log(this.props.route.params.session)
+  }
   return (
     <View>
-      <div>Welcome to our homepage</div>
+      <Text>This is our Home Page!!!!</Text>
+      <Button title="JustChecking" onPress={() => checking()}/>
     </View>
-
   )
 }
 
