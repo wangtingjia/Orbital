@@ -24,6 +24,7 @@ export default function Auth() {
         if (password == password2) {
             signUpWithEmail()
             console.log("Matches")
+            Alert.alert("check your email")
         }
         else {
             alert("Passwords do not match")

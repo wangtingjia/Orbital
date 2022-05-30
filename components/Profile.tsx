@@ -21,7 +21,7 @@ function EditProfile({route, navigation}){
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState("");
     const [biography, setBiography] = useState("");
-    const [avatar_url, setAvatarUrl] = useState("");
+    const [avatar_url, setAvatarUrl] = useState("https://i.stack.imgur.com/l60Hf.png");
     const [session, setSession] = useState<Session | null>(null);
     const {email, usernameJSON, biographyJSON, avatar_urlJSON} = route.params;
 
@@ -32,7 +32,7 @@ function EditProfile({route, navigation}){
         console.log(avatar_url);
     },[]);
 
-    useEffect(() => {
+   useEffect(() => {
         console.log("TESTING");
         setSession(supabase.auth.session());
         if (session) getProfile();
@@ -104,7 +104,7 @@ function EditProfile({route, navigation}){
     return (
         <View>
             <Text>You can edit your profile here</Text>
-            <Image style={styles.profileImage} source={{uri:avatar_url || "https://i.stack.imgur.com/l60Hf.png"}} />
+            <Image style={styles.profileImage} source={{uri:avatar_url}} />
             <View>
                 <Input label="Email" value={session?.user?.email}
                     autoCompleteType={undefined} disabled/>
@@ -136,7 +136,7 @@ function Profile({route, navigation}){
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState("");
     const [biography, setBiography] = useState("");
-    const [avatar_url, setAvatarUrl] = useState("https://i.stack.imgur.com/l60Hf.png");
+    const [avatar_url, setAvatarUrl] = useState("");
     const [session, setSession] = useState<Session | null>(null);
 
     useEffect(() => {
@@ -146,7 +146,6 @@ function Profile({route, navigation}){
 
     async function signOut(){
         supabase.auth.signOut();
-        navigation.navigate("InitialPage")
     }
 
     async function getProfile() {
@@ -179,17 +178,17 @@ function Profile({route, navigation}){
     return (
         <View>
             <Text>This is Your Profile Page</Text>
-            <Image style={styles.profileImage} source={{uri:avatar_url}} />
+            <Image style={styles.profileImage} source={{uri:avatar_url || "https://i.stack.imgur.com/l60Hf.png"}} />
             <View>
                 <Input label="Email" value={session?.user?.email} disabled
                     autoCompleteType={undefined} />
             </View>
             <View>
-                <Input label="Username" value={username || ""} disabled 
+                <Input label="Username" value={username} disabled 
                     autoCompleteType={undefined} />
             </View>
             <View>
-                <Input label="Biography" value={biography || ""} disabled
+                <Input label="Biography" value={biography} disabled
                     autoCompleteType={undefined} />
             </View>
             <Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile", {
