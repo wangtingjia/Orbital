@@ -132,7 +132,7 @@ function EditProfile({route, navigation}){
     )
 }
 
-function Profile({route, navigation}){
+function MyProfile({route, navigation}){
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState("");
     const [biography, setBiography] = useState("");
@@ -205,7 +205,7 @@ function Profile({route, navigation}){
 export function ProfileStack({navigation}){
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="My Profile" component={MyProfile} />
             <Stack.Screen name="Edit Profile" component={EditProfile} />
         </Stack.Navigator>
     )
