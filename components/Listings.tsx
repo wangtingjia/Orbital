@@ -1,18 +1,50 @@
 import React from 'react'
-import { View, Button, Text } from "react-native";
+import { View, StyleSheet, Button, Text } from "react-native";
+import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from './LoginSignupScreen'
 import { supabase } from '../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+const styles = StyleSheet.create({
+  profileImage:{
+      width:200,
+      height:200,
+  },
+  container:{
+      flex:1,
+  },
+});
 
 const Tab = createMaterialTopTabNavigator();
 
 
 function CreateListing({route, navigation}) {
   return (
-    <View>
-      <Text> Start your sports activity here </Text>
-    </View>
+    return (
+      <View>
+          <Text>You can edit your profile here</Text>
+          <View>
+              <Input label="Name of Sport" value={username}
+                  autoCompleteType={undefined} onChangeText={(text)=>setName(text)} />
+          </View>
+          <View>
+              <Input label="Biography" value={biography}
+                  autoCompleteType={undefined} onChangeText={(text)=>setBiography(text)} />
+          </View>
+          <View>
+              <Input label="Profile Photo URL" value={avatar_url}
+                  autoCompleteType={undefined} onChangeText={(text)=>setAvatarUrl(text)} />
+          </View>
+          <View>
+              <Button
+                  title={loading ? "Loading ..." : "Update"}
+                  onPress={() => updateProfile({ username, avatar_url, biography })}
+                  disabled={loading}
+              />
+          </View>
+      </View>
+  )
   )
 }
 
