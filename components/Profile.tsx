@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import {Session, ApiError} from "@supabase/supabase-js";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+
 const styles = StyleSheet.create({
     profileImage:{
         width:200,
