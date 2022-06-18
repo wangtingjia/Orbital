@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, StyleSheet, Button, Text } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from './LoginSignupScreen'
@@ -74,6 +74,11 @@ function CreateListing({route, navigation}) {
       if (error) {
         throw error;
       }
+
+      let { error2 } = await supabase
+        .from("listings")
+        .select('all_users')
+
   } catch (error) {
     alert((error as ApiError).message);
   } finally {
@@ -82,7 +87,7 @@ function CreateListing({route, navigation}) {
 }
 
   return (
-    <View>
+    <ScrollView>
       <View style={styles.verticallySpaced}>
         <Input
           label="Group Name"
@@ -148,7 +153,8 @@ function CreateListing({route, navigation}) {
           disabled={loading}
         />
       </View>
-    </View>
+
+    </ScrollView>
   )
 }
 
@@ -190,8 +196,8 @@ const styles = StyleSheet.create({
       padding: 12,
   },
   verticallySpaced: {
-      paddingTop: 10,
-      paddingBottom: 10,
+      paddingTop: 5,
+      paddingBottom: 5,
       alignSelf: "stretch",
       fontWeight: "bold",
       color: "grey",
