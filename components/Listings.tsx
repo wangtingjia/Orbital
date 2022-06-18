@@ -7,11 +7,11 @@ import {Session, ApiError} from "@supabase/supabase-js";
 import { supabase } from '../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Select from 'react-select'
-import { useUpsert } from 'react-supabase';
+import { useUpsert, useSelect } from 'react-supabase';
 
 const Tab = createMaterialTopTabNavigator();
 
-function CreateListing({route, navigation}) {
+function CreateListing() {
   const [GroupName, setGroupName] = useState('')
   const [Sport, setSport] = useState('')
   const [Description, setDescription] = useState('')
@@ -74,10 +74,6 @@ function CreateListing({route, navigation}) {
       if (error) {
         throw error;
       }
-
-      let { error2 } = await supabase
-        .from("listings")
-        .select('all_users')
 
   } catch (error) {
     alert((error as ApiError).message);
@@ -149,7 +145,7 @@ function CreateListing({route, navigation}) {
       <View>
         <Button
           title={loading ? "Loading ..." : "Create listing"}
-          onPress={() => generateListing({ GroupName, Sport, Description, GroupSize, isPrivate })}
+          onPress={() => generateListing({ GroupName, Sport, Description, GroupSize, isPrivate})}
           disabled={loading}
         />
       </View>
@@ -158,24 +154,34 @@ function CreateListing({route, navigation}) {
   )
 }
 
-function SearchListing ({route, navigation}) {
+function SearchListing () {
   return (
     <View>
       <Text> Search for sports activity here </Text> 
     </View>
-    
   )
 }
 
-function MyListing ({route, navigation}) {
+function MyListing () {
+  
+  async function select_listings() {
+    const user = supabase.auth.user();
+      if (!user) throw new Error("No user on the session!");
+  
+    const { data, error } = await supabase 
+      .from('listings')
+      .select('id, user_id, GroupName, Sport, Description')
+      .match ({user_id : user.id})
+  }
+  
   return (
     <View>
-      <Text> My Listings </Text> 
+      <Text> Search for sports activity here </Text> 
     </View>
   )
 }
 
-function Listings({navigation}){
+function Listings(){
   function checking(){
     console.log(supabase.auth.session())
   }
