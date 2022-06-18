@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
@@ -163,8 +163,13 @@ function SearchListing () {
 }
 
 function MyListing () {
-  
-  async function select_listings() {
+  const [myData, setmyData] = useState<any | null> ()
+
+  useEffect(() => {
+    fetchListings()
+  }, [])
+
+  const fetchListings = async () =>  {
     const user = supabase.auth.user();
       if (!user) throw new Error("No user on the session!");
   
@@ -172,12 +177,14 @@ function MyListing () {
       .from('listings')
       .select('id, user_id, GroupName, Sport, Description')
       .match ({user_id : user.id})
+      setmyData(data)
   }
-  
+
   return (
-    <View>
-      <Text> Search for sports activity here </Text> 
-    </View>
+    <div>
+      <Text> Hi </Text>
+    </div>
+    
   )
 }
 
@@ -206,9 +213,13 @@ const styles = StyleSheet.create({
       paddingBottom: 5,
       alignSelf: "stretch",
       fontWeight: "bold",
-      color: "grey",
-
-
+      color: "grey"
+  },
+  row_data: {
+    display:'flex',
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: "space-between"
   },
   mt20: {
       marginTop: 20,
