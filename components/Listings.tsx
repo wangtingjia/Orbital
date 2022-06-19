@@ -6,8 +6,10 @@ import LoginSignupScreen from './LoginSignupScreen'
 import {Session, ApiError} from "@supabase/supabase-js";
 import { supabase } from '../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import * as ReactDOM from 'react-dom';
 import Select from 'react-select'
 import { useUpsert, useSelect } from 'react-supabase';
+import { renderNode } from 'react-native-elements/dist/helpers';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -15,7 +17,6 @@ function CreateListing() {
   const [GroupName, setGroupName] = useState('')
   const [Sport, setSport] = useState('')
   const [Description, setDescription] = useState('')
-
   const [GroupSize, setGroupSize] = useState('0')
   const GroupSizeOptions = [
     {id: '5', name: '0-5'},
@@ -26,7 +27,6 @@ function CreateListing() {
   ];
   const Add = GroupSizeOptions.map(Add => Add)
   const handleGroupSizeChange = (e) => console.log((GroupSize[e.target.value]))
-
   const [isPrivate, setisPrivate] = useState(0)
   const PrivacyOptions = [
     {id: 'isnotprivate', name: 'public'},
@@ -155,15 +155,100 @@ function CreateListing() {
 }
 
 function SearchListing () {
-  return (
-    <View>
-      <Text> Search for sports activity here </Text> 
-    </View>
-  )
+  const [myData, setmyData] = useState<Object[] | null> ()
+  const [myInput, setmyInput ] = useState('')
+
+  async function getListingbyGroupName(input) {
+    const { data, error } = await supabase
+    .from('listings')
+    .select('id, user_id, GroupName, Sport, Description')
+    .match({GroupName : input})
+    if (error) {
+      throw error;
+    }
+    setmyData(data)
+  }
+
+  async function getListingbySport(input) {
+    const { data, error } = await supabase
+    .from('listings')
+    .select('id, user_id, GroupName, Sport, Description')
+    .match({sport : input})
+    if (error) {
+      throw error;
+    }
+    setmyData(data)
+  }
+  
+  async function getAllListing() {
+    const { data, error } = await supabase
+    .from('listings')
+    .select('id, user_id, GroupName, Sport, Description')
+    if (error) {
+      throw error;
+    }
+    setmyData(data)
+  }
+  if (myData) {
+    return (
+      <ScrollView>
+        <View style={styles.verticallySpaced}>
+          <Input
+            label="Your input: "
+            value={myInput || ""}
+            onChangeText={(text) => setmyInput(text)}
+            autoCompleteType={undefined} />
+            <Button title = 'Search by groupname' onPress = {() => getListingbyGroupName(myInput)}/>
+            <Button title = 'Search by sport ' onPress = {() => getListingbySport(myInput)}/>
+            <Button title = 'Show all listings' onPress = {() => getAllListing()}/>
+        </View>
+        <div>
+        {
+        myData.map((data, index) => {
+          return (
+            <View style={styles.row_data}>
+              <ol key = 'list${index++}'> 
+              <li> GroupName: {data.GroupName} </li>
+              <li> Sport: {data.Sport} </li>
+              <li> Description: {data.Description} </li>
+              </ol>
+            </View>
+            
+          )
+        })
+        }
+    </div>
+      </ScrollView>
+    )
+  }
+  else {
+    return (
+      <ScrollView>
+        <View style={styles.verticallySpaced}>
+          <Input
+            label="Your input: "
+            value={myInput || ""}
+            onChangeText={(text) => setmyInput(text)}
+            autoCompleteType={undefined} />
+            <Button title = 'Search by groupname' onPress = {() => getListingbyGroupName(myInput)}/>
+            <Button title = 'Search by sport ' onPress = {() => getListingbySport(inputSport)}/>
+            <Button title = 'Show all listings' onPress = {() => getAllListing()}/>
+        </View>
+      </ScrollView>
+    )
+  }
 }
 
 function MyListing () {
-  const [myData, setmyData] = useState<any | null> ()
+  const [myData, setmyData] = useState<Object[] | null> ()
+
+  async function deleteListing(input_id) {
+    const { data, error } = await supabase
+    .from('listings')
+    .delete()
+    .match({ id: input_id })
+    fetchListings()
+  }
 
   useEffect(() => {
     fetchListings()
@@ -177,15 +262,41 @@ function MyListing () {
       .from('listings')
       .select('id, user_id, GroupName, Sport, Description')
       .match ({user_id : user.id})
+      if (error) {
+        throw error;
+      }
       setmyData(data)
   }
-
-  return (
-    <div>
-      <Text> Hi </Text>
-    </div>
-    
-  )
+  if (myData) {
+    return( 
+      <ScrollView>
+      <div>
+        {
+          myData.map((data, index) => {
+            return (
+              <View style={styles.row_data}>
+                <ol key = 'list${index++}'> 
+                <li> GroupName: {data.GroupName} </li>
+                <li> Sport: {data.Sport} </li>
+                <li> Description: {data.Description} </li>
+                </ol>
+                <Button title='Delete' onPress = {() => deleteListing(data.id)}/> 
+              </View>
+              
+            )
+          })
+        }
+      </div>
+      </ScrollView>
+    )
+  }
+  else {
+    return (
+      <View>
+        <Text>No current listings</Text>
+      </View>
+    )
+  }
 }
 
 function Listings(){
@@ -219,7 +330,9 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection: 'row',
     flex: 1,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   mt20: {
       marginTop: 20,
