@@ -97,12 +97,11 @@ function CreateListing() {
       </View>
 
       <View style={styles.verticallySpaced}>
-        <Text> Private group ? </Text>
+        <Text> Private group ?  {isPrivate} </Text>
         <Text> </Text> 
-        <Button title = 'Select yes' onPress={() => setisPrivate('true')} />
-        <Button title = 'Select no' onPress={() => setisPrivate('false')} />
+        <Button title = 'Select yes' onPress={() => setisPrivate('yes')} />
+        <Button title = 'Select no' onPress={() => setisPrivate('no')} />
         <Text> </Text>
-        <Text> Is your group private ? {isPrivate}</Text>
       </View>
 
       <View>
@@ -136,7 +135,7 @@ function SearchListing () {
     const { data, error } = await supabase
     .from('listings')
     .select('id, user_id, GroupName, Sport, Description')
-    .match({sport : input})
+    .match({Sport : input})
     if (error) {
       throw error;
     }
@@ -282,12 +281,15 @@ const styles = StyleSheet.create({
       color: "grey"
   },
   row_data: {
-    display:'flex',
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 20,
+      paddingTop: 10,
+      paddingBottom: 10,
+      alignSelf: "stretch",
+      fontWeight: "bold",
+      borderRadius: 4,
+      borderColor: "#172343",
+      backgroundColor: "#F5DEB3",
+      marginHorizontal: 15,
+      marginVertical: 20,
   },
   mt20: {
       marginTop: 20,
