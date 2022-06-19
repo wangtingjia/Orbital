@@ -18,32 +18,12 @@ function CreateListing() {
   const [Sport, setSport] = useState('')
   const [Description, setDescription] = useState('')
   const [GroupSize, setGroupSize] = useState('0')
-  const GroupSizeOptions = [
-    {id: '5', name: '0-5'},
-    {id: '10', name: '6-10'},
-    {id: '15', name: '11-15'},
-    {id: '20', name: '16-20'},
-    {id: '99', name: 'More than 20'}
-  ];
-  const Add = GroupSizeOptions.map(Add => Add)
-  const handleGroupSizeChange = (e) => console.log((GroupSize[e.target.value]))
-  const [isPrivate, setisPrivate] = useState(0)
-  const PrivacyOptions = [
-    {id: 'isnotprivate', name: 'public'},
-    {id: 'isprivate', name: 'private'}
-  ];
-  const Add2 = PrivacyOptions.map(Add2 => Add2)
-  const handlePrivacyChange = (e) => console.log((isPrivate[e.target.value]))
+  const [isPrivate, setisPrivate] = useState('')
 
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(false)
 
-  async function generateListing({
-    GroupName,
-    Sport,
-    Description,
-    GroupSize,
-    isPrivate
+  async function generateListing({GroupName,Sport,Description,GroupSize, isPrivate
   }: {
     GroupName: string;
     Sport: string;
@@ -109,37 +89,20 @@ function CreateListing() {
       </View>
 
       <View style={styles.verticallySpaced}>
-        <h3> Size of your group </h3>
-        <select
-          onChange={e => {
-            const val = e.target.value.split("**")[0];
-            const name = e.target.value.split("**")[1];
-            setGroupSize(val);
-          }}
-        >
-          <option value ="" />
-          {GroupSizeOptions.map(item => (
-            <option value={item.id}> {item.name} </option>
-          ))}
-        </select>
-        <h4>{GroupSize}</h4>
+        <Input
+          label="Size of your group"
+          value={GroupSize || ""}
+          onChangeText={(text) => setGroupSize(text)}
+          autoCompleteType={undefined} />
       </View>
 
       <View style={styles.verticallySpaced}>
-        <h3> Privacy settings</h3>
-        <select
-          onChange={e => {
-            const val = e.target.value.split("**")[0];
-            const name = e.target.value.split("**")[1];
-            setisPrivate(val);
-          }}
-        >
-          <option value ="" />
-          {PrivacyOptions.map(item => (
-            <option value={item.id}> {item.name} </option>
-          ))}
-        </select>
-        <h4>{isPrivate}</h4>
+        <Text> Private group ? </Text>
+        <Text> </Text> 
+        <Button title = 'Select yes' onPress={() => setisPrivate('true')} />
+        <Button title = 'Select no' onPress={() => setisPrivate('false')} />
+        <Text> </Text>
+        <Text> Is your group private ? {isPrivate}</Text>
       </View>
 
       <View>
@@ -155,10 +118,10 @@ function CreateListing() {
 }
 
 function SearchListing () {
-  const [myData, setmyData] = useState<Object[] | null> ()
-  const [myInput, setmyInput ] = useState('')
+  const [MyData, setMyData] = useState<Object[] | null> ()
+  const [MyInput, setMyInput ] = useState('')
 
-  async function getListingbyGroupName(input) {
+  async function GetListingbyGroupName(input) {
     const { data, error } = await supabase
     .from('listings')
     .select('id, user_id, GroupName, Sport, Description')
@@ -166,10 +129,10 @@ function SearchListing () {
     if (error) {
       throw error;
     }
-    setmyData(data)
+    setMyData(data)
   }
 
-  async function getListingbySport(input) {
+  async function GetListingbySport(input) {
     const { data, error } = await supabase
     .from('listings')
     .select('id, user_id, GroupName, Sport, Description')
@@ -177,47 +140,43 @@ function SearchListing () {
     if (error) {
       throw error;
     }
-    setmyData(data)
+    setMyData(data)
   }
   
-  async function getAllListing() {
+  async function GetAllListing() {
     const { data, error } = await supabase
     .from('listings')
     .select('id, user_id, GroupName, Sport, Description')
     if (error) {
       throw error;
     }
-    setmyData(data)
+    setMyData(data)
   }
-  if (myData) {
+  if (MyData) {
     return (
       <ScrollView>
         <View style={styles.verticallySpaced}>
           <Input
             label="Your input: "
-            value={myInput || ""}
-            onChangeText={(text) => setmyInput(text)}
+            value={MyInput || ""}
+            onChangeText={(text) => setMyInput(text)}
             autoCompleteType={undefined} />
-            <Button title = 'Search by groupname' onPress = {() => getListingbyGroupName(myInput)}/>
-            <Button title = 'Search by sport ' onPress = {() => getListingbySport(myInput)}/>
-            <Button title = 'Show all listings' onPress = {() => getAllListing()}/>
+            <Button title = 'Search by groupname' onPress = {() => GetListingbyGroupName(MyInput)}/>
+            <Button title = 'Search by sport ' onPress = {() => GetListingbySport(MyInput)}/>
+            <Button title = 'Show all listings' onPress = {() => GetAllListing()}/>
         </View>
-        <div>
         {
-        myData.map((data, index) => {
+        MyData.map((data, index) => {
           return (
             <View style={styles.row_data}>
-              <ol key = 'list${index++}'> 
-              <li> GroupName: {data.GroupName} </li>
-              <li> Sport: {data.Sport} </li>
-              <li> Description: {data.Description} </li>
-              </ol>
+                <Text> GroupName: {data.GroupName} </Text>
+                <Text> Sport: {data.Sport} </Text> 
+               <Text> Description: {data.Description}</Text>
             </View>
             
           )
         })
         }
-    </div>
       </ScrollView>
     )
   }
@@ -227,12 +186,12 @@ function SearchListing () {
         <View style={styles.verticallySpaced}>
           <Input
             label="Your input: "
-            value={myInput || ""}
-            onChangeText={(text) => setmyInput(text)}
+            value={MyInput || ""}
+            onChangeText={(text) => setMyInput(text)}
             autoCompleteType={undefined} />
-            <Button title = 'Search by groupname' onPress = {() => getListingbyGroupName(myInput)}/>
-            <Button title = 'Search by sport ' onPress = {() => getListingbySport(inputSport)}/>
-            <Button title = 'Show all listings' onPress = {() => getAllListing()}/>
+            <Button title = 'Search by groupname' onPress = {() => GetListingbyGroupName(MyInput)}/>
+            <Button title = 'Search by sport ' onPress = {() => GetListingbySport(MyInput)}/>
+            <Button title = 'Show all listings' onPress = {() => GetAllListing()}/>
         </View>
       </ScrollView>
     )
@@ -240,21 +199,21 @@ function SearchListing () {
 }
 
 function MyListing () {
-  const [myData, setmyData] = useState<Object[] | null> ()
+  const [MyData, setMyData] = useState<Object[] | null> ()
 
-  async function deleteListing(input_id) {
+  async function DeleteListing(input_id) {
     const { data, error } = await supabase
     .from('listings')
     .delete()
     .match({ id: input_id })
-    fetchListings()
+    FetchListings()
   }
 
   useEffect(() => {
-    fetchListings()
+    FetchListings()
   }, [])
 
-  const fetchListings = async () =>  {
+  const FetchListings = async () =>  {
     const user = supabase.auth.user();
       if (!user) throw new Error("No user on the session!");
   
@@ -265,28 +224,24 @@ function MyListing () {
       if (error) {
         throw error;
       }
-      setmyData(data)
+      setMyData(data)
   }
-  if (myData) {
+  if (MyData) {
     return( 
       <ScrollView>
-      <div>
         {
-          myData.map((data, index) => {
+          MyData.map((data, index) => {
             return (
               <View style={styles.row_data}>
-                <ol key = 'list${index++}'> 
-                <li> GroupName: {data.GroupName} </li>
-                <li> Sport: {data.Sport} </li>
-                <li> Description: {data.Description} </li>
-                </ol>
-                <Button title='Delete' onPress = {() => deleteListing(data.id)}/> 
+                <Text> GroupName: {data.GroupName} </Text>
+                <Text> Sport: {data.Sport} </Text> 
+                <Text> Description: {data.Description} </Text>
+                <Button title='Delete' onPress = {() => DeleteListing(data.id)}/> 
               </View>
               
             )
           })
         }
-      </div>
       </ScrollView>
     )
   }
