@@ -29,11 +29,9 @@ function EditProfile({route, navigation}){
         setUsername(JSON.stringify(usernameJSON));
         setBiography(JSON.stringify(biographyJSON));
         setAvatarUrl(JSON.stringify(avatar_urlJSON));
-        console.log(avatar_url);
     },[]);
 
    useEffect(() => {
-        console.log("TESTING");
         setSession(supabase.auth.session());
         if (session) getProfile();
     }, [session]);
@@ -162,7 +160,7 @@ function Profile({route, navigation}){
             if (error && status !== 406) {
                 throw error;
             }
-
+            console.log(data);
             if (data) {
                 setUsername(data.username);
                 setAvatarUrl(data.avatar_url);
@@ -198,6 +196,7 @@ function Profile({route, navigation}){
                 avatar_url: avatar_url,
             })} />
             <Button title="Sign Out" onPress={() => signOut()}/>
+            <Button title="Testing" onPress={()=>console.log("test")}/>
         </View>
     )
 }

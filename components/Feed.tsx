@@ -11,10 +11,12 @@ const Tab = createBottomTabNavigator();
 function Feed({navigation}){
   function checking(){
     console.log(supabase.auth.session())
+    console.log(supabase.auth.user())
   }
   return (
     <View>
         <Text>This is your News Feed</Text>
+        <Button title="checking" onPress={()=>{checking()}}/>
     </View>
   )
 }

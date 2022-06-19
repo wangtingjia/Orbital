@@ -9,13 +9,36 @@ export default function Auth() {
     const [password2, setPassword2] = useState('')
     const [loading, setLoading] = useState(false)
 
+    async function checkEmailExistence(){
+        let { data, error, status} = await supabase
+        .from("users")
+        .select("email")
+        .eq("email",email)
+        .single();
+
+        if (error && status !== 406) {
+            throw error;
+        }
+        if (data) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     async function signUpWithEmail() {
         setLoading(true)
+        let emailExists = await checkEmailExistence();
+        if (emailExists){
+            console.log("Email already registered");
+            Alert.alert("Email already registered");
+            setLoading(false);
+            return;
+        }
         const { user, error } = await supabase.auth.signUp({
             email: email,
             password: password,
         })
-
         if (error) Alert.alert(error.message)
         setLoading(false)
     }
