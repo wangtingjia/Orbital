@@ -10,7 +10,7 @@ import { Session } from '@supabase/supabase-js'
 import LoginSignupScreen from './components/LoginSignupScreen'
 import Listings from './components/Listings'
 import {ProfileStack} from './components/Profile'
-import Feed from './components/Feed'
+import {FeedStack}from './components/Feed'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 const Stack = createNativeStackNavigator();
@@ -39,7 +39,7 @@ function App() {
     <NavigationContainer>
       {session ? 
         <Tab.Navigator>
-          <Tab.Screen name="Feed" component={Feed} />
+          <Tab.Screen name="Feed" component={FeedStack} options ={{headerShown:false}} />
           <Tab.Screen name="Profile" component={ProfileStack} options={{headerShown: false}} />
           <Tab.Screen name="Listings" component={Listings} />
         </Tab.Navigator> :
