@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../LoginSignupScreen'
@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import * as ReactDOM from 'react-dom';
 import { renderNode } from 'react-native-elements/dist/helpers';
+import { confirmAlert } from 'react-confirm-alert';
 
 export default function MyListing () {
     const [MyData, setMyData] = useState<Object[] | null> ()
@@ -37,6 +38,28 @@ export default function MyListing () {
         }
         setMyData(data)
     }
+
+    function confirm_delete(id) {
+      return (
+        Alert.alert(
+          "Confirm delete",
+          "Confirm Delete",
+          [
+            {
+              text: "Yes",
+              onPress: () => DeleteListing(id)
+            },
+            {
+              text: "No",
+              onPress: () => console.log("cancel delete")
+            }
+          ]
+        
+        )
+      )
+  };
+        
+
     if (MyData) {
       return( 
         <ScrollView>
@@ -47,13 +70,13 @@ export default function MyListing () {
                   <Text> GroupName: {data.GroupName} </Text>
                   <Text> Sport: {data.Sport} </Text> 
                   <Text> Description: {data.Description} </Text>
-                  <Button title='Delete' onPress = {() => DeleteListing(data.id)}/> 
+                  <Button title='Delete' onPress = {() => {confirm_delete(data.id)}}/> 
                 </View>
                 
               )
             })
           }
-          <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchListings()}/>
+            <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchListings()}/>
         </ScrollView>
       )
     }
