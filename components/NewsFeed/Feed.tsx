@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react'
-import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList } from "react-native";
+import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList, TouchableHighlight } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
-import { CheckBox } from 'react-native-elements';
+import { CheckBox, Overlay } from 'react-native-elements';
 import RNFetchBlob from 'react-native-fetch-blob';
-import Post from './NewsFeed/Post';
-import Comments from './NewsFeed/Comments';
+import Post from './Post';
+import Comments from './Comments';
+import { MyProfile } from '../Profile/Profile';
+import { Session } from '@supabase/supabase-js';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,8 +42,8 @@ function AddPost(props) {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [fileName, setFileName] = useState("");
-  const [currUser, setCurrUser] = useState(props.route.params.currUser);
-
+  const [currUser, setCurrUser] = useState("");
+  const [currUserPostIDs, setCurrUserPostIDs] = useState([]);
   async function uploadImage(method) {
     let result = await (method == 'library' ? ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -72,6 +74,14 @@ function AddPost(props) {
     }
   }
 
+  const getCurrUser = async () => {
+    const { data, error } = await supabase.from("profiles").select("username").match({ id: supabase.auth.session()?.user.id }).single();
+    if (data) {
+        setCurrUser(data.username);
+        return data.username;
+    }
+}
+
   async function postImage() {
     if (!formData) {
       Alert.alert("please choose an image");
@@ -83,13 +93,24 @@ function AddPost(props) {
       const updates = {
         uuid: supabase.auth.session()?.user.id,
         caption: caption,
-        filepath: publicURL?.publicURL,
-        username: toggleCheckBox ? "anonymous" : currUser,
-        created_at: new Date()
+        filepath: path,
+        username: currUser == "" ? await getCurrUser() : currUser,
+        created_at: new Date(),
+        filepublicURL: publicURL?.publicURL
       }
-      console.log(currUser);
-      let { error } = await supabase.from("image_posts").insert(updates, { returning: "minimal" });
+      let { data, error } = await supabase.from("image_posts").insert(updates).single();
+      let newPostID = data.id;
+      console.log(data);
+      if (!error) {
+        let { data, error } = await supabase.from("profiles").select("post_ids").match({ id: supabase.auth.session()?.user.id }).single();
+        if (data) {
+          let newPostIDs = data.post_ids ? [...data.post_ids, newPostID] : [newPostID];
+          let { error } = await supabase.from("profiles").update({ post_ids: newPostIDs }).match({ id: supabase.auth.session()?.user.id });
+          if (error) console.log(error);
+        }
+      }
     }
+    props.navigation.goBack();
   }
 
   return (
@@ -115,55 +136,74 @@ function AddPost(props) {
   )
 }
 
-function NewsFeed({ navigation }) {
+export function NewsFeed({ navigation, route }) {
   const [feedPosts, setFeedPosts] = useState<Object[]>([{}]);
   const [currUser, setCurrUser] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Object | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     getAllPosts();
-    const unsubscribe = navigation.addListener('focus', () => {
-      getAllPosts();
-      console.log(feedPosts);
+    const unsubscribe = navigation.addListener('focus', async () => {
+      await getAllPosts();
     });
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(()=>{
-    const getCurrUser = async () => {
-      const {data,error} = await supabase.from("profiles").select("username").match({id:supabase.auth.session()?.user.id}).single();
-      if (data) setCurrUser(data.username);
+  const showOverlay = (item) => {
+    if (item.uuid == supabase.auth.session()?.user.id) {
+      setVisible(true);
+      setSelectedPost(item);
     }
-    getCurrUser();
-  },[])
+  }
 
-  async function getAllPosts() {
+  const DeletePost = async () => {
+    if (!selectedPost) return;
+    let { data, error } = await supabase.from("image_posts").delete().match({ id: selectedPost.id });
+    console.log(error);
+    if (!error) {
+      let { data, error } = await supabase.storage.from('images').remove([selectedPost.filepath]);
+      console.log(data);
+      setSelectedPost(null);
+      await getAllPosts();
+    }
+    setVisible(false);
+  }
+
+  const getAllPosts = async () => {
     const { data, error } = await supabase
       .from('image_posts')
-      .select('id, caption, filepath, uuid, username, mediatype, comments')
+      .select('id, caption, filepath, uuid, username, mediatype, comments, filepublicURL')
     if (error) {
       throw error;
     }
+    data.reverse();
     setFeedPosts(data);
   }
 
   return (
     <View>
       <View>
-        <Text></Text>
+        <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+          <Text>Do you want to delete this post?</Text>
+          <Button title="Yes" onPress={() => DeletePost()} />
+          <Button title="No" onPress={() => setVisible(false)} />
+        </Overlay>
         <View>
-          <Button title="Post" onPress={() => navigation.navigate("Add Post", {currUser: currUser})} />
+          {route.params.viewOwnPost || <Button title="Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
         </View>
       </View>
       <FlatList
-        style={{height:400}}
+        style={{ height: 400 }}
         data={feedPosts}
         numColumns={1}
         horizontal={false}
-
         renderItem={({ item, index }) => (
-          <View key={index}>
-            <Post route={{ params: { item:item, currUser: currUser}}} navigation={navigation} />
-          </View>
+          <TouchableHighlight key={index} onLongPress={() => showOverlay(item)}>
+            {route.params.viewOwnPost && item.uuid == supabase.auth.session()?.user.id ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> :
+              !route.params.viewOwnPost ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> : <View></View>}
+          </TouchableHighlight>
         )}
       />
 
@@ -176,9 +216,10 @@ function NewsFeed({ navigation }) {
 export function FeedStack({ navigation }) {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="News Feed" component={NewsFeed} />
+      <Stack.Screen name="News Feed" component={NewsFeed} initialParams={{ viewOwnPost: false }} />
       <Stack.Screen name="Add Post" component={AddPost} />
-      <Stack.Screen name="Comments" component={Comments}/>
+      <Stack.Screen name="Comments" component={Comments} />
+      <Stack.Screen name="User Profile" component={MyProfile} initialParams={{ visitor: true }} />
     </Stack.Navigator>
   )
 }

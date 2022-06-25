@@ -1,7 +1,8 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, TouchableHighlight } from "react-native";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
-import { Button, Input } from "react-native-elements";
+import { Button, Input, Overlay } from "react-native-elements";
+import { Route } from "react-router-dom";
 
 function Comments(props) {
     const [commentList, setCommentList] = useState<Object[]>([]);
@@ -11,6 +12,7 @@ function Comments(props) {
     const [postID, setPostID] = useState(props.route.params.id);
     const [poster, setPoster] = useState(props.route.params.username);
     const [caption, setCaption] = useState(props.route.params.caption);
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -23,15 +25,37 @@ function Comments(props) {
         fetchComments().catch(console.error);
     }, [updating]);
 
+    const getCurrUser = async () => {
+        const { data, error } = await supabase.from("profiles").select("username").match({ id: supabase.auth.session()?.user.id }).single();
+        if (data) {
+            setUser(data.username);
+            return data.username;
+        }
+    }
+
     const postComment = async () => {
         const newComment = {
-            commenter: user,
+            commenterID: supabase.auth.session()?.user.id,
+            commenter: user == "" ? await getCurrUser() : user,
             comment: comment,
         };
         let newComments = [...commentList, newComment];
         //console.log(newComments);
         const { data, error } = await supabase.from('image_posts').update({ comments: newComments }).match({ id: postID });
         setUpdating(!updating);
+    }
+
+    const deleteComment = async (index) => {
+        let newComments = commentList.splice(index, 1);
+        console.log(newComments);
+        const { data, error } = await supabase.from('image_posts').update({ comments: commentList }).match({ id: postID });
+        setVisible(false);
+    }
+
+    const toggleOverlay = (uuid) => {
+        if (uuid == supabase.auth.session()?.user.id) {
+            setVisible(true);
+        }
     }
 
     return (
@@ -46,7 +70,13 @@ function Comments(props) {
 
                 renderItem={({ item, index }) => (
                     <View>
-                        <Text>{item.commenter} : {item.comment}{"\n"}</Text>
+                        <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+                            <Text>Do you want to delete this comment?</Text>
+                            <Button title="Yes" onPress={() => deleteComment(index)} />
+                            <Button title="No" onPress={() => setVisible(false)} />
+                        </Overlay>
+                        <TouchableHighlight onLongPress={() => props.navigation.navigate("User Profile", { uuid: item.commenterID, visitor: item.commenterID == supabase.auth.session()?.user.id ? false : true })}><Text>{item.commenter}</Text></TouchableHighlight>
+                        <TouchableHighlight onLongPress={() => toggleOverlay(item.commenterID)}><Text>{item.comment}{"\n"}</Text></TouchableHighlight>
                     </View>
                 )}
             />

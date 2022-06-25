@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
-import { supabase } from '../lib/supabase'
+import { Alert, StyleSheet, View, Text } from 'react-native'
+import { supabase } from '../../lib/supabase'
 import { Button, Input } from 'react-native-elements'
 
-export default function Auth() {
+export default function Login({navigation}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -44,6 +44,10 @@ export default function Auth() {
             </View>
             <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
+            </View>
+            <View>
+                <Text>Do not have an Account?</Text>
+                <Button title="Sign up!" disabled={loading} onPress={()=> navigation.navigate("Registration")}/>
             </View>
         </View>
     )

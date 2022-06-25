@@ -1,7 +1,7 @@
 import { View, Text, Alert, StyleSheet, Image, Platform } from "react-native";
-import { Input, Button } from "react-native-elements"
+import { Input, Button, Overlay } from "react-native-elements"
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import { Session, ApiError } from "@supabase/supabase-js";
 import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,12 +16,13 @@ const styles = StyleSheet.create({
     },
 });
 
-export function EditProfile({ route, navigation }) {
+export function EditProfile({ route, navigation, update }) {
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState("");
     const [biography, setBiography] = useState("");
     const [avatar_url, setAvatarUrl] = useState("");
     const [session, setSession] = useState<Session | null>(null);
+    const [visible, setVisible] = useState(false)
 
     useEffect(() => {
         (async () => {
@@ -104,6 +105,7 @@ export function EditProfile({ route, navigation }) {
             Alert.alert((error as ApiError).message);
         } finally {
             setLoading(false);
+            setVisible(true);
         }
     }
 
@@ -125,6 +127,7 @@ export function EditProfile({ route, navigation }) {
                 username: username,
                 biography: biography,
                 updated_at: new Date(),
+                set: true,
             };
 
             let { error } = await supabase
@@ -138,6 +141,8 @@ export function EditProfile({ route, navigation }) {
             Alert.alert((error as ApiError).message);
         } finally {
             setLoading(false);
+            setVisible(true);
+            update(false);
         }
     }
 
@@ -170,6 +175,10 @@ export function EditProfile({ route, navigation }) {
 
     return (
         <View>
+            <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+                <Text>Update Saved!</Text>
+                <Button title="ok" onPress={()=>setVisible(false)}/>
+            </Overlay>
             <Text>You can edit your profile here</Text>
             <Image style={styles.profileImage} source={{ uri: avatar_url || "https://i.stack.imgur.com/l60Hf.png" }} />
             <View>

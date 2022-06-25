@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { Button, Input } from 'react-native-elements'
 
-export default function Auth() {
+export default function Registration() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [password2, setPassword2] = useState('')
@@ -33,7 +33,7 @@ export default function Auth() {
             console.log("Email already registered");
             Alert.alert("Email already registered");
             setLoading(false);
-            return;
+            return false;
         }
         const { user, error } = await supabase.auth.signUp({
             email: email,
@@ -41,13 +41,14 @@ export default function Auth() {
         })
         if (error) Alert.alert(error.message)
         setLoading(false)
+        return true
     }
 
-    function checkPasswords() {
+    async function checkPasswords() {
         if (password == password2) {
-            signUpWithEmail()
+            let success = await signUpWithEmail()
             console.log("Matches")
-            Alert.alert("check your email")
+            if (success) Alert.alert("Check your email for confirmation")
         }
         else {
             alert("Passwords do not match")

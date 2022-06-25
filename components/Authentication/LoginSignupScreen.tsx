@@ -7,7 +7,7 @@ export default function LoginSignupScreen({navigation}) {
 
     return (
         <View>
-            <Button title="Sign in" onPress={() => navigation.navigate('Auth')}/>
+            <Button title="Sign in" onPress={() => navigation.navigate('Login')}/>
             <Button title="Sign up" onPress={() => navigation.navigate('Registration')}/>
         </View>
     )

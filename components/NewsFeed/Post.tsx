@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { View, Image, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Button } from 'react-native-elements';
+import { View, Image, FlatList, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { Button, Overlay } from 'react-native-elements';
+import { supabase } from '../../lib/supabase';
 import Comments from './Comments';
 
 const styles = StyleSheet.create({
@@ -26,7 +27,8 @@ const styles = StyleSheet.create({
 
 function Post(props) {
     const [item, setItem] = useState(props.route.params.item);
-    const [currUser, setCurrUser] = useState(props.route.params.currUser);
+    const [currUser, setCurrUser] = useState("");
+    const [visible, setVisible] = useState(false);
 
     useEffect(()=>{
         setCurrUser(props.route.params.currUser);
@@ -41,7 +43,7 @@ function Post(props) {
                 </View>
                 :
                 <View>
-                    <Image style={styles.profileImage} source={{ uri: item.filepath }} />
+                    <Image style={styles.profileImage} source={{ uri: item.filepublicURL }} />
                 </View>
             }
             <View>
