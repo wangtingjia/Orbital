@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { View, Button, Text, StyleSheet, Image, Alert, ScrollView } from "react-native";
+import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,6 +8,8 @@ import { Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { CheckBox } from 'react-native-elements';
 import RNFetchBlob from 'react-native-fetch-blob';
+import Post from './NewsFeed/Post';
+import Comments from './NewsFeed/Comments';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,12 +34,13 @@ const styles = StyleSheet.create({
   },
 });
 
-function AddPost({ navigation }) {
+function AddPost(props) {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState("");
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [fileName, setFileName] = useState("");
+  const [currUser, setCurrUser] = useState(props.route.params.currUser);
 
   async function uploadImage(method) {
     let result = await (method == 'library' ? ImagePicker.launchImageLibraryAsync({
@@ -75,14 +78,16 @@ function AddPost({ navigation }) {
     }
     let path = (toggleCheckBox ? "private/" + supabase.auth.session()?.user.id + "/" : "public/") + fileName;
     let { data, error } = await supabase.storage.from('images').upload(path, formData);
-    let { data:publicURL } = await supabase.storage.from('images').getPublicUrl(path);
+    let { data: publicURL } = await supabase.storage.from('images').getPublicUrl(path);
     if (data) {
       const updates = {
         uuid: supabase.auth.session()?.user.id,
         caption: caption,
         filepath: publicURL?.publicURL,
+        username: toggleCheckBox ? "anonymous" : currUser,
         created_at: new Date()
       }
+      console.log(currUser);
       let { error } = await supabase.from("image_posts").insert(updates, { returning: "minimal" });
     }
   }
@@ -112,19 +117,29 @@ function AddPost({ navigation }) {
 
 function NewsFeed({ navigation }) {
   const [feedPosts, setFeedPosts] = useState<Object[]>([{}]);
+  const [currUser, setCurrUser] = useState("");
 
   useEffect(() => {
     getAllPosts();
     const unsubscribe = navigation.addListener('focus', () => {
       getAllPosts();
+      console.log(feedPosts);
     });
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(()=>{
+    const getCurrUser = async () => {
+      const {data,error} = await supabase.from("profiles").select("username").match({id:supabase.auth.session()?.user.id}).single();
+      if (data) setCurrUser(data.username);
+    }
+    getCurrUser();
+  },[])
+
   async function getAllPosts() {
     const { data, error } = await supabase
       .from('image_posts')
-      .select('id, caption, filepath, uuid, username')
+      .select('id, caption, filepath, uuid, username, mediatype, comments')
     if (error) {
       throw error;
     }
@@ -134,33 +149,36 @@ function NewsFeed({ navigation }) {
   return (
     <View>
       <View>
-        <Text>This is your News Feed</Text>
+        <Text></Text>
         <View>
-          <Button title="Post" onPress={() => navigation.navigate("Add Post")} />
+          <Button title="Post" onPress={() => navigation.navigate("Add Post", {currUser: currUser})} />
         </View>
       </View>
-      <ScrollView style={{ marginBottom: 58 }}>
-        {
-          feedPosts.map((data, index) => {
-            return (
-              <View style={styles.row_data} key={index}>
-                <Image style={styles.profileImage} source={{ uri: data.filepath || "https://i.stack.imgur.com/l60Hf.png" }} />
-                <Text> {data.username}: {data.caption}</Text>
-              </View>
+      <FlatList
+        style={{height:400}}
+        data={feedPosts}
+        numColumns={1}
+        horizontal={false}
 
-            )
-          })
-        }
-      </ScrollView>
+        renderItem={({ item, index }) => (
+          <View key={index}>
+            <Post route={{ params: { item:item, currUser: currUser}}} navigation={navigation} />
+          </View>
+        )}
+      />
+
     </View>
   )
 }
+
+
 
 export function FeedStack({ navigation }) {
   return (
     <Stack.Navigator>
       <Stack.Screen name="News Feed" component={NewsFeed} />
       <Stack.Screen name="Add Post" component={AddPost} />
+      <Stack.Screen name="Comments" component={Comments}/>
     </Stack.Navigator>
   )
 }
