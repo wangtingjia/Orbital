@@ -122,4 +122,3 @@ const styles = StyleSheet.create({
         color: 'grey'
     }
 });
-
