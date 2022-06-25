@@ -49,7 +49,7 @@ export default function CreateListing() {
     
     async function generateListing({GroupName,Sport,Description,GroupSize, isPrivate
      }: {
-    GroupName: string;
+        GroupName: string;
         Sport: string;
         Description: string;
         GroupSize: string;
@@ -63,12 +63,13 @@ export default function CreateListing() {
         console.log(user.id)
     
         const updates = {
-        user_id: user.id,
-        GroupName,
-        Sport,
+            user_id: user.id,
+            GroupName,
+            Sport,
             Description,
             GroupSize,
             isPrivate,
+         
         };
     
         let { error } = await supabase

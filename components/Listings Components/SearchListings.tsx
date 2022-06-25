@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 export default function SearchListing () {
     const [MyData, setMyData] = useState<Object[] | null> ()
     const [MyInput, setMyInput ] = useState('')
-  
+
     async function GetListingbyGroupName(input) {
       const { data, error } = await supabase
       .from('listings')
@@ -72,6 +72,50 @@ export default function SearchListing () {
       }
       setMyData(data)
     }
+
+    async function add_member(input_sport_id) {
+      try {
+          const user = supabase.auth.user();
+          if (!user) throw new Error("No user on the session!");
+              
+          console.log(user.id)
+      
+          const updates = {
+              user_id: user.id,
+              sport_id: input_sport_id
+          };
+      
+          let { error } = await supabase
+              .from("member_list")
+              .upsert(updates, { returning: "minimal" });
+      
+          if (error) {
+          throw error;
+          }
+      
+      } catch (error) {
+          alert((error as ApiError).message);
+      }
+    }
+
+    async function check_membership(input_sport_id) {
+      const user = supabase.auth.user();
+          if (!user) throw new Error("No user on the session!");
+      const { data, error } = await supabase
+        .from('member_list')
+        .select('id, user_id, sport_id')
+        .match({sport_id : input_sport_id, user_id : user.id})
+        if (error) {
+          throw error;
+        }
+        if (data.length) {
+          alert("error: you are in this group")
+        }
+        else {
+          add_member(input_sport_id)
+        }
+    }
+
     if (MyData) {
       return (
         <ScrollView>
@@ -91,9 +135,9 @@ export default function SearchListing () {
               <View style={styles.row_data}>
                   <Text> GroupName: {data.GroupName} </Text>
                   <Text> Sport: {data.Sport} </Text> 
-                 <Text> Description: {data.Description}</Text>
-              </View>
-              
+                  <Text> Description: {data.Description}</Text>
+                  <Button title = 'Join group' onPress = {() => check_membership(data.id)} />
+              </View> 
             )
           })
           }
