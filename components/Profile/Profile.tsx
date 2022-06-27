@@ -42,6 +42,9 @@ export function MyProfile({ route, navigation }) {
     }, [session, route.params.visitor]);
 
     useEffect(() => {
+        if (route.params.visitor){
+            return;
+        }
         const unsubscribe = navigation.addListener('focus', () => {
             getProfile("");
         });
@@ -63,6 +66,7 @@ export function MyProfile({ route, navigation }) {
                 .select(`username, avatar_url, biography`)
                 .eq("id", route.params.visitor ? route.params.uuid : user.id)
                 .single();
+                console.log("here");
             if (error && status !== 406) {
                 throw error;
             }

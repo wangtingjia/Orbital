@@ -194,11 +194,11 @@ export function NewsFeed({ navigation, route }) {
           <Button title="No" onPress={() => setVisible(false)} />
         </Overlay>
         <View>
-          {route.params.viewOwnPost || <Button title="Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
+          {route.params.viewOwnPost || <Button title="Create Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
         </View>
       </View>
       <FlatList
-        style={{ height: 400 }}
+        style={{ height: 650 }}
         data={feedPosts}
         numColumns={1}
         horizontal={false}
