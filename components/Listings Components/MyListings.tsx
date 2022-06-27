@@ -25,6 +25,10 @@ export default function MyListing(){
 }
 
 function MemberListing() {
+  return (
+    <text> to be implemented </text>
+  )
+  /*
   const [SportIds, setSportIds] = useState<Object[] | null> ()
   const [MyData, setMyData] = useState<Object[] | null> ()
 
@@ -69,6 +73,7 @@ function MemberListing() {
         </View>
       )
     }
+    **/
 }
 
 function OwnerListing () {
