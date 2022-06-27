@@ -10,7 +10,73 @@ import * as ReactDOM from 'react-dom';
 import { renderNode } from 'react-native-elements/dist/helpers';
 import { confirmAlert } from 'react-confirm-alert';
 
-export default function MyListing () {
+const Tab = createMaterialTopTabNavigator();
+
+export default function MyListing(){
+  function checking(){
+    console.log(supabase.auth.session())
+  }
+  return (
+    <Tab.Navigator> 
+      <Tab.Screen name="Member Listings" component ={MemberListing} />
+      <Tab.Screen name="Owner Listings" component={OwnerListing} />
+    </Tab.Navigator>
+  )
+}
+
+function MemberListing() {
+  return (
+    <text> to be implemented </text>
+  )
+  /*
+  const [SportIds, setSportIds] = useState<Object[] | null> ()
+  const [MyData, setMyData] = useState<Object[] | null> ()
+
+  const FetchSportIds = async () =>  {
+    const user = supabase.auth.user();
+      if (!user) throw new Error("No user on the session!");
+    
+      const { data, error } = await supabase 
+        .from('member_list')
+        .select('id, user_id, sport_id')
+        .match ({user_id : user.id})
+        if (error) {
+          throw error;
+        }
+        setSportIds(data)
+  }
+        
+  
+  if (MyData) {
+    return( 
+      <ScrollView>
+        {
+          MyData.map((data, index) => {
+            return (
+              <View style={styles.row_data}>
+                <Text> GroupName: {data.GroupName} </Text>
+                <Text> Sport: {data.Sport} </Text> 
+                <Text> Description: {data.Description} </Text>
+              </View>    
+            )
+          })
+        }
+        <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchSportIds()}/>
+      </ScrollView>
+      )
+    }
+    else {
+      return (
+        <View>
+          <Text>No current listings</Text>
+          <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchListings()}/>
+        </View>
+      )
+    }
+    **/
+}
+
+function OwnerListing () {
     const [MyData, setMyData] = useState<Object[] | null> ()
   
     async function DeleteListing(input_id) {
@@ -122,4 +188,3 @@ const styles = StyleSheet.create({
         color: 'grey'
     }
 });
-
