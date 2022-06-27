@@ -75,11 +75,14 @@ function AddPost(props) {
   }
 
   const getCurrUser = async () => {
-    const { data, error } = await supabase.from("profiles").select("username").match({ id: supabase.auth.session()?.user.id }).single();
+    const { data, error } = await supabase.from("profiles")
+    .select("username")
+    .match({ id: supabase.auth.user()?.id }).single();
     if (data) {
         setCurrUser(data.username);
         return data.username;
     }
+    if (error) throw error;
 }
 
   async function postImage() {

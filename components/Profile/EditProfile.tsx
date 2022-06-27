@@ -195,14 +195,14 @@ export function EditProfile({ route, navigation, update }) {
             </View>
             <View>
                 <Button
-                    title={loading ? "Loading ..." : "Update"}
+                    title={loading ? "Loading ..." : "Save Updates"}
                     onPress={() => updateProfile({ username, biography })}
                     disabled={loading}
                 />
             </View>
             <View>
                 <Button
-                    title="Upload Photo"
+                    title="Upload Profile Photo"
                     onPress={() => uploadImage()} />
             </View>
         </View>

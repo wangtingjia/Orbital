@@ -7,9 +7,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { decode } from 'base64-arraybuffer';
 import { EditProfile } from "./EditProfile";
-import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
+import { SportsProfile } from "./SportsProfile";
 import { NewsFeed } from "../NewsFeed/Feed";
 import Comments from "../NewsFeed/Comments";
+import AddSport from "./AddSport";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 const styles = StyleSheet.create({
     profileImage: {
         width: 200,
@@ -20,6 +22,7 @@ const styles = StyleSheet.create({
     },
 });
 
+const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export function MyProfile({ route, navigation }) {
@@ -79,10 +82,10 @@ export function MyProfile({ route, navigation }) {
     return (
         <View>
             <Image style={styles.profileImage} source={{ uri: avatar_url + "?" + new Date() || "https://i.stack.imgur.com/l60Hf.png" }} />
-            <View>
+            {!route.params.visitor && <View>
                 <Input label="Email" value={session?.user?.email} disabled
                     autoCompleteType={undefined} />
-            </View>
+            </View>}
             <View>
                 <Input label="Username" value={username} disabled
                     autoCompleteType={undefined} />
@@ -94,9 +97,11 @@ export function MyProfile({ route, navigation }) {
             {!route.params.visitor &&
                 <View>
                     <Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} />
-                    <Button title="Sign Out" onPress={() => signOut()} />
                     <Button title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} />
+                    <Button title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user()})} />
+                    <Button title="Sign Out" onPress={() => signOut()} />
                 </View>}
+                {route.params.visitor && <Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", {id:route.params.uuid})} />}
         </View>
     )
 }
@@ -104,10 +109,12 @@ export function MyProfile({ route, navigation }) {
 export function ProfileStack({ navigation }) {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="My Profile" component={MyProfile} initialParams={{visitor:false, uuid:""}} />
+            <Stack.Screen name="My Profile" component={MyProfile} initialParams={{ visitor: false, uuid: "" }} />
             <Stack.Screen name="Edit Profile" component={EditProfile} />
             <Stack.Screen name="My Posts" component={NewsFeed} />
             <Stack.Screen name="Comments" component={Comments} />
+            <Stack.Screen name="Sports Interests" component={SportsProfile} />
+            <Stack.Screen name="Add Sports" component={AddSport} />
         </Stack.Navigator>
     )
 }

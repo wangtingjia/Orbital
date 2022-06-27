@@ -15,9 +15,6 @@ import MyListing from './MyListings'
 const Tab = createMaterialTopTabNavigator();
 
 function Listings(){
-  function checking(){
-    console.log(supabase.auth.session())
-  }
   return (
     <Tab.Navigator> 
       <Tab.Screen name="Initiate activity" component ={CreateListing} />
