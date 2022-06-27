@@ -107,7 +107,7 @@ function ConnectionRequests({ navigation }) {
 export default function ConnectionRequestStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Connection Requests" component={ConnectionRequests} options={{ headerShown: false }} />
+            <Stack.Screen name="Connection Request" component={ConnectionRequests} options={{ headerShown: false }} />
             <Stack.Screen name="User Profile" component={MyProfile} />
             <Stack.Screen name="User Sport Interests" component={SportsProfile} />
         </Stack.Navigator>

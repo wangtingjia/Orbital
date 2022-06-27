@@ -102,10 +102,10 @@ export function MyProfile({ route, navigation }) {
                 <View>
                     <Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} />
                     <Button title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} />
-                    <Button title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user()})} />
+                    <Button title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user().id, visitor: false})} />
                     <Button title="Sign Out" onPress={() => signOut()} />
                 </View>}
-                {route.params.visitor && <Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", {id:route.params.uuid})} />}
+                {route.params.visitor && <Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", {id:route.params.uuid, visitor:true})} />}
         </View>
     )
 }

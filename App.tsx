@@ -21,7 +21,7 @@ const Tab = createBottomTabNavigator();
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
-  const [firstLogin, setFirstLogin] = useState(false);
+  const [firstLogin, setFirstLogin] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -33,13 +33,15 @@ function App() {
       })
     }
     return () => { mounted = false }
-  }, [])
+  }, [session])
 
   useEffect(() => {
     const getFirstLogin = async () => {
-      let { data, error } = await supabase.from("profiles").select("set").match({ id: session?.user.id }).single();
+      let { data, error } = await supabase.from("profiles").select("set").match({ id: supabase.auth.session().user.id }).single();
       if (data) {
         setFirstLogin(!data.set);
+        console.log(data.set);
+        console.log("FAFAF");
       }
     }
     supabase.auth.onAuthStateChange((_event, session) => {

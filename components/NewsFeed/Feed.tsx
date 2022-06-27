@@ -7,11 +7,11 @@ import { useState } from 'react';
 import { Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { CheckBox, Overlay } from 'react-native-elements';
-import RNFetchBlob from 'react-native-fetch-blob';
 import Post from './Post';
 import Comments from './Comments';
 import { MyProfile } from '../Profile/Profile';
 import { Session } from '@supabase/supabase-js';
+import { SportsProfile } from '../Profile/SportsProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -223,6 +223,7 @@ export function FeedStack({ navigation }) {
       <Stack.Screen name="Add Post" component={AddPost} />
       <Stack.Screen name="Comments" component={Comments} />
       <Stack.Screen name="User Profile" component={MyProfile} initialParams={{ visitor: true }} />
+      <Stack.Screen name="User Sport Interests" component={SportsProfile} />
     </Stack.Navigator>
   )
 }

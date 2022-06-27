@@ -25,7 +25,7 @@ export function SportsProfile({ navigation, route }) {
     }, [ownerID])
 
     const getSportsList = async () => {
-        let { data, error } = await supabase.from("profiles").select("sports_list").match({ id: ownerID }).single();
+        let { data, error } = await supabase.from("profiles").select("sports_list").match({ id: route.params.visitor ? ownerID : supabase.auth.user()?.id}).single();
         if (error) {
             throw error;
         } else {
@@ -41,13 +41,13 @@ export function SportsProfile({ navigation, route }) {
                     <View>
                         <Text>I play {item.sportName} and my skill level is {item.skillLevel}</Text>
                         <Text>{item.experience}</Text>
-                        {userID == ownerID && <Button title="Edit Interest" onPress={()=> navigation.navigate("Add Sports", {skillLevel: item.skillLevel, experience:item.experience, disable: true, selectedSport: item.sportName, sportsList:sportsList})}/>}
+                        {!route.params.visitor && <Button title="Edit Interest" onPress={()=> navigation.navigate("Add Sports", {skillLevel: item.skillLevel, experience:item.experience, disable: true, selectedSport: item.sportName, sportsList:sportsList})}/>}
                         <Text></Text>
                     </View>
                 )}
             />
             <View>
-                {userID == ownerID && <Button title="Add Sport" onPress={() => navigation.navigate("Add Sports", { skillLevel: null, experience: "", disable: false, selectedSport: "", sportsList:sportsList})} />}
+                {!route.params.visitor && <Button title="Add Sport" onPress={() => navigation.navigate("Add Sports", { skillLevel: null, experience: "", disable: false, selectedSport: "", sportsList:sportsList})} />}
             </View>
         </View>
     )

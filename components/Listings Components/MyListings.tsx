@@ -26,7 +26,7 @@ export default function MyListing(){
 
 function MemberListing() {
   return (
-    <text> to be implemented </text>
+    <Text> to be implemented </Text>
   )
   /*
   const [SportIds, setSportIds] = useState<Object[] | null> ()
@@ -132,7 +132,7 @@ function OwnerListing () {
           {
             MyData.map((data, index) => {
               return (
-                <View style={styles.row_data}>
+                <View style={styles.row_data} key={index}>
                   <Text> GroupName: {data.GroupName} </Text>
                   <Text> Sport: {data.Sport} </Text> 
                   <Text> Description: {data.Description} </Text>
