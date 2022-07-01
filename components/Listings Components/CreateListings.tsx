@@ -63,13 +63,13 @@ export default function CreateListing() {
         console.log(user.id)
     
         const updates = {
-            user_id: user.id,
+            owner_id: user.id,
             GroupName,
             Sport,
             Description,
             GroupSize,
             isPrivate,
-         
+            all_members: [user.id]
         };
     
         let { error } = await supabase

@@ -97,8 +97,8 @@ function OwnerListing () {
     
       const { data, error } = await supabase 
         .from('listings')
-        .select('id, user_id, GroupName, Sport, Description')
-        .match ({user_id : user.id})
+        .select('id, owner_id, GroupName, Sport, Description')
+        .match ({owner_id : user.id})
         if (error) {
           throw error;
         }
