@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../LoginSignupScreen'
@@ -86,6 +86,26 @@ export default function CreateListing() {
         setLoading(false);
     }
 }
+
+function confirm_create({ GroupName, Sport, Description, GroupSize, isPrivate}) {
+    return (
+        Alert.alert(
+          "Confirm Create",
+          "Confirm Create",
+          [
+            {
+              text: "Yes",
+              onPress: () => generateListing({ GroupName, Sport, Description, GroupSize, isPrivate})
+            },
+            {
+              text: "No",
+              onPress: () => console.log("cancel create listing")
+            }
+          ]
+        
+        )
+    )
+}
     
 return (
         <ScrollView>
@@ -132,7 +152,7 @@ return (
             <View>
             <Button
                 title={loading ? "Loading ..." : "Create listing"}
-                onPress={() => generateListing({ GroupName, Sport, Description, GroupSize, isPrivate})}
+                onPress={() => confirm_create({ GroupName, Sport, Description, GroupSize, isPrivate})}
                 disabled={loading}
             />
             </View>

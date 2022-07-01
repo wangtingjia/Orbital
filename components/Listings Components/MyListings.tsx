@@ -26,7 +26,7 @@ export default function MyListing(){
 
 function MemberListing() {
   return (
-    <text> to be implemented </text>
+    <Text> to be implemented </Text>
   )
   /*
   const [SportIds, setSportIds] = useState<Object[] | null> ()

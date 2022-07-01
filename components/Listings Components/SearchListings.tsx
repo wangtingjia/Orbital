@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert} from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../LoginSignupScreen'
@@ -98,6 +98,26 @@ export default function SearchListing () {
       }
     }
 
+    function confirm_join(input_sport_id) {
+      return (
+        Alert.alert(
+          "Confirm to join group",
+          "Confirm to join group",
+          [
+            {
+              text: "Yes",
+              onPress: () => add_member({input_sport_id})
+            },
+            {
+              text: "No",
+              onPress: () => console.log("cancel join group")
+            }
+          ]
+        
+        )
+      )
+    }
+
     async function check_membership(input_sport_id) {
       const user = supabase.auth.user();
           if (!user) throw new Error("No user on the session!");
@@ -112,7 +132,7 @@ export default function SearchListing () {
           alert("error: you are in this group")
         }
         else {
-          add_member(input_sport_id)
+          confirm_join(input_sport_id)
         }
     }
 
@@ -132,7 +152,7 @@ export default function SearchListing () {
           {
           MyData.map((data, index) => {
             return (
-              <View style={styles.row_data}>
+              <View style={styles.row_data} key = {index}>
                   <Text> GroupName: {data.GroupName} </Text>
                   <Text> Sport: {data.Sport} </Text> 
                   <Text> Description: {data.Description}</Text>
