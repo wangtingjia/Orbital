@@ -25,35 +25,29 @@ export default function MyListing(){
 }
 
 function MemberListing() {
-  return (
-    <Text> to be implemented </Text>
-  )
-  /*
-  const [SportIds, setSportIds] = useState<Object[] | null> ()
   const [MyData, setMyData] = useState<Object[] | null> ()
 
-  const FetchSportIds = async () =>  {
+  const FetchData = async () =>  {
     const user = supabase.auth.user();
       if (!user) throw new Error("No user on the session!");
     
       const { data, error } = await supabase 
-        .from('member_list')
-        .select('id, user_id, sport_id')
-        .match ({user_id : user.id})
+        .from('listings')
+        .select('id, GroupName, Description, all_members')
+        .contains('all_members',[user.id])
         if (error) {
           throw error;
         }
-        setSportIds(data)
+        setMyData(data)
   }
         
-  
   if (MyData) {
     return( 
       <ScrollView>
         {
           MyData.map((data, index) => {
             return (
-              <View style={styles.row_data}>
+              <View style={styles.row_data} key ={index}>
                 <Text> GroupName: {data.GroupName} </Text>
                 <Text> Sport: {data.Sport} </Text> 
                 <Text> Description: {data.Description} </Text>
@@ -61,7 +55,7 @@ function MemberListing() {
             )
           })
         }
-        <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchSportIds()}/>
+        <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchData()}/>
       </ScrollView>
       )
     }
@@ -69,11 +63,10 @@ function MemberListing() {
       return (
         <View>
           <Text>No current listings</Text>
-          <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchListings()}/>
+          <Button title = 'Refresh' style={styles.bottom} onPress ={() => FetchData()}/>
         </View>
       )
     }
-    **/
 }
 
 function OwnerListing () {
