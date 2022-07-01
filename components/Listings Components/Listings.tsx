@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
-import LoginSignupScreen from '../LoginSignupScreen'
+import LoginSignupScreen from '../Authentication/LoginSignupScreen'
 import {Session, ApiError} from "@supabase/supabase-js";
 import { supabase } from '../../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -15,9 +15,6 @@ import MyListing from './MyListings'
 const Tab = createMaterialTopTabNavigator();
 
 function Listings(){
-  function checking(){
-    console.log(supabase.auth.session())
-  }
   return (
     <Tab.Navigator> 
       <Tab.Screen name="Initiate activity" component ={CreateListing} />

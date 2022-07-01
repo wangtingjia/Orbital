@@ -1,53 +1,69 @@
 import 'react-native-url-polyfill/auto'
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
-import Auth from './components/Auth'
-import Registration from './components/Registration'
+import Login from './components/Authentication/Login'
+import Registration from './components/Authentication/Registration'
 import { NavigationContainer, StackActions } from '@react-navigation/native'
-import { createNativeStackNavigator} from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { View } from 'react-native'
+import { Text } from 'react-native'
 import { Session } from '@supabase/supabase-js'
-import LoginSignupScreen from './components/LoginSignupScreen'
+import Welcome from './components/Authentication/LoginSignupScreen'
 import Listings from './components/Listings Components/Listings'
-import {ProfileStack} from './components/Profile'
-import {FeedStack}from './components/Feed'
+import { ProfileStack } from './components/Profile/Profile'
+import { FeedStack } from './components/NewsFeed/Feed'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { EditProfile } from './components/Profile/EditProfile'
+import BuddyFinding from './components/BuddyFinder/BuddyFinding'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
+  const [firstLogin, setFirstLogin] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    if (mounted){
+    if (mounted) {
       setSession(supabase.auth.session())
-
       supabase.auth.onAuthStateChange((_event, session) => {
-        console.log(session)
+        //console.log(session)
         setSession(session)
       })
     }
-    if (session){
+    return () => { mounted = false }
+  }, [session])
 
+  useEffect(() => {
+    const getFirstLogin = async () => {
+      let { data, error } = await supabase.from("profiles").select("set").match({ id: supabase.auth.session().user.id }).single();
+      if (data) {
+        setFirstLogin(!data.set);
+        console.log(data.set);
+        console.log("FAFAF");
+      }
     }
-    return () => {mounted = false}
+    supabase.auth.onAuthStateChange((_event, session) => {
+      getFirstLogin();
+    })
   }, [])
-  
+
   return (
     <NavigationContainer>
-      {session ? 
-        <Tab.Navigator>
-          <Tab.Screen name="Feed" component={FeedStack} options ={{headerShown:false}} />
-          <Tab.Screen name="Profile" component={ProfileStack} options={{headerShown: false}} />
-          <Tab.Screen name="Listings" component={Listings} />
-        </Tab.Navigator> :
+      {session ?
+        firstLogin ? <EditProfile route={{ uuid: session.user.id }} navigation={null} update={setFirstLogin} /> :
+          <Tab.Navigator>
+            <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false }} />
+            <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} initialParams={{ visitor: false, uuid: session.user ? session.user.id : null }} />
+            <Tab.Screen name="Listings" component={Listings} />
+            <Tab.Screen name="Find a buddy" component={BuddyFinding} />
+          </Tab.Navigator> :
         <Stack.Navigator>
-          <Stack.Screen name="InitialPage" component={LoginSignupScreen} />
-          <Stack.Screen name="Auth" component={Auth}/>
-          <Stack.Screen name="Registration" component={Registration}/>
-        </Stack.Navigator> }
+          <Stack.Screen name="Welcome" component={Welcome} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Registration" component={Registration} />
+        </Stack.Navigator>}
     </NavigationContainer>
   )
 }

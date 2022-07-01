@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { View, StyleSheet, Button, Text, ScrollView, Alert } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
-import LoginSignupScreen from '../LoginSignupScreen'
+import LoginSignupScreen from '../Authentication/LoginSignupScreen'
 import {Session, ApiError} from "@supabase/supabase-js";
 import { supabase } from '../../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -132,7 +132,7 @@ function OwnerListing () {
           {
             MyData.map((data, index) => {
               return (
-                <View style={styles.row_data}>
+                <View style={styles.row_data} key={index}>
                   <Text> GroupName: {data.GroupName} </Text>
                   <Text> Sport: {data.Sport} </Text> 
                   <Text> Description: {data.Description} </Text>
