@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../Authentication/LoginSignupScreen'
@@ -63,13 +63,13 @@ export default function CreateListing() {
         console.log(user.id)
     
         const updates = {
-            user_id: user.id,
+            owner_id: user.id,
             GroupName,
             Sport,
             Description,
             GroupSize,
             isPrivate,
-         
+            all_members: [user.id]
         };
     
         let { error } = await supabase
@@ -85,6 +85,26 @@ export default function CreateListing() {
     } finally {
         setLoading(false);
     }
+}
+
+function confirm_create({ GroupName, Sport, Description, GroupSize, isPrivate}) {
+    return (
+        Alert.alert(
+          "Confirm Create",
+          "Confirm Create",
+          [
+            {
+              text: "Yes",
+              onPress: () => generateListing({ GroupName, Sport, Description, GroupSize, isPrivate})
+            },
+            {
+              text: "No",
+              onPress: () => console.log("cancel create listing")
+            }
+          ]
+        
+        )
+    )
 }
     
 return (
@@ -132,7 +152,7 @@ return (
             <View>
             <Button
                 title={loading ? "Loading ..." : "Create listing"}
-                onPress={() => generateListing({ GroupName, Sport, Description, GroupSize, isPrivate})}
+                onPress={() => confirm_create({ GroupName, Sport, Description, GroupSize, isPrivate})}
                 disabled={loading}
             />
             </View>

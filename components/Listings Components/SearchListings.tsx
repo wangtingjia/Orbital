@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert} from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../Authentication/LoginSignupScreen'
@@ -39,12 +39,13 @@ const styles = StyleSheet.create({
 
 export default function SearchListing () {
     const [MyData, setMyData] = useState<Object[] | null> ()
-    const [MyInput, setMyInput ] = useState('')
+    const [MyInput, setMyInput] = useState('')
+    const [IsOwner, setIsOwner] = useState(false)
 
     async function GetListingbyGroupName(input) {
       const { data, error } = await supabase
       .from('listings')
-      .select('id, user_id, GroupName, Sport, Description')
+      .select('id, owner_id, GroupName, Sport, Description')
       .match({GroupName : input})
       if (error) {
         throw error;
@@ -55,7 +56,7 @@ export default function SearchListing () {
     async function GetListingbySport(input) {
       const { data, error } = await supabase
       .from('listings')
-      .select('id, user_id, GroupName, Sport, Description')
+      .select('id, owner_id, GroupName, Sport, Description')
       .match({Sport : input})
       if (error) {
         throw error;
@@ -65,24 +66,49 @@ export default function SearchListing () {
     
     async function GetAllListing() {
       const { data, error } = await supabase
-      .from('listings')
-      .select('id, user_id, GroupName, Sport, Description')
+        .from('listings')
+        .select('id, owner_id, GroupName, Sport, Description')
       if (error) {
         throw error;
       }
       setMyData(data)
     }
 
-    async function add_member(input_sport_id) {
+    async function update_listing(SportIdKey) {
+      const user = supabase.auth.user();
+      if (!user) throw new Error("No user on the session!");
+
+      let { data, error } = await supabase
+        .from('listings')
+        .select('id, all_members')
+        .match({ id: SportIdKey })
+        .single()
+        if (error) {
+          console.log(error)
+        }
+        else {
+          console.log(data)
+          let { error } = await supabase
+            .from('listings')
+            .update({ all_members: [...data.all_members,user.id] },{ returning: "minimal" })
+            .match({ id: SportIdKey})
+            .single();
+            
+          if (error) {
+            throw error;
+          }
+        }
+      }
+      
+
+    async function add_member(SportIdKey) {
       try {
           const user = supabase.auth.user();
           if (!user) throw new Error("No user on the session!");
-              
-          console.log(user.id)
       
           const updates = {
               user_id: user.id,
-              sport_id: input_sport_id
+              sport_id: SportIdKey
           };
       
           let { error } = await supabase
@@ -98,21 +124,69 @@ export default function SearchListing () {
       }
     }
 
-    async function check_membership(input_sport_id) {
+    function confirm_join(SportIdKey) {
+      return (
+        Alert.alert(
+          "Confirm to join group",
+          "Confirm to join group",
+          [
+            {
+              text: "Yes",
+              onPress: () => {
+                update_listing(SportIdKey)
+                add_member(SportIdKey)
+              }
+            },
+            {
+              text: "No",
+              onPress: () => console.log("cancel join group")
+            }
+          ]
+        
+        )
+      )
+    }
+
+    async function check_owner (SportIdKey, user) {
+      const { data, error} = await supabase 
+        .from('listings')
+        .select('id, owner_id')
+        .match({owner_id : user.id, id: SportIdKey})
+      
+        if(error) {
+          throw(error)
+        }
+        else {
+          if(data.length) {
+            setIsOwner(true)
+          }
+          else {
+            setIsOwner(false)
+          }
+        }
+    }
+
+    async function check_membership(SportIdKey) {
       const user = supabase.auth.user();
           if (!user) throw new Error("No user on the session!");
+      
+      check_owner(SportIdKey, user)
+
       const { data, error } = await supabase
         .from('member_list')
         .select('id, user_id, sport_id')
-        .match({sport_id : input_sport_id, user_id : user.id})
+        .match({sport_id : SportIdKey, user_id : user.id})
         if (error) {
           throw error;
         }
-        if (data.length) {
+        if (IsOwner) {
+          alert("error: you are the owner of this group")
+        }
+        else if (data.length) {
           alert("error: you are in this group")
         }
         else {
-          add_member(input_sport_id)
+          confirm_join(SportIdKey)
         }
     }
 
@@ -132,11 +206,11 @@ export default function SearchListing () {
           {
           MyData.map((data, index) => {
             return (
-              <View style={styles.row_data}>
+              <View style={styles.row_data} key = {index}>
                   <Text> GroupName: {data.GroupName} </Text>
                   <Text> Sport: {data.Sport} </Text> 
                   <Text> Description: {data.Description}</Text>
-                  <Button title = 'Join group' onPress = {() => check_membership(data.id)} />
+                  <Button title = 'Join group' onPress = { () => check_membership(data.id) } />
               </View> 
             )
           })
