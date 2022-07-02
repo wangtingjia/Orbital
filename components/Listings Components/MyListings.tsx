@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert, TouchableHighlight } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../Authentication/LoginSignupScreen'
@@ -9,18 +9,32 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import * as ReactDOM from 'react-dom';
 import { renderNode } from 'react-native-elements/dist/helpers';
 import { confirmAlert } from 'react-confirm-alert';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { MemberInGroup } from './ListofMembers';
+import { MyProfile } from '../Profile/Profile';
 
 const Tab = createMaterialTopTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function MyListing(){
   function checking(){
     console.log(supabase.auth.session())
   }
   return (
-    <Tab.Navigator> 
-      <Tab.Screen name="Member Listings" component ={MemberListing} />
-      <Tab.Screen name="Owner Listings" component={OwnerListing} />
-    </Tab.Navigator>
+        <Tab.Navigator> 
+          <Tab.Screen name="Member Listings" component ={MemberListing} />
+          <Tab.Screen name="Your Listings" component={OwnerStackScreen} />
+        </Tab.Navigator>
+  )
+}
+
+function OwnerStackScreen() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Owner Listings" component={OwnerListing}/>
+      <Stack.Screen name="Member Details" component={MemberInGroup}/>
+      <Stack.Screen name="Member profile" component={MyProfile}/>
+    </Stack.Navigator>
   )
 }
 
@@ -69,7 +83,7 @@ function MemberListing() {
     }
 }
 
-function OwnerListing () {
+function OwnerListing ({navigation}) {
     const [MyData, setMyData] = useState<Object[] | null> ()
   
     async function DeleteListing(input_id) {
@@ -120,18 +134,19 @@ function OwnerListing () {
         
 
     if (MyData) {
-      return( 
+      return(
         <ScrollView>
           {
             MyData.map((data, index) => {
               return (
-                <View style={styles.row_data} key={index}>
-                  <Text> GroupName: {data.GroupName} </Text>
-                  <Text> Sport: {data.Sport} </Text> 
-                  <Text> Description: {data.Description} </Text>
+                <TouchableHighlight onPress = {() => navigation.navigate('Member Details', {input_id : data.id})}>
+                  <View style={styles.row_data} key={index}>
+                    <Text> GroupName: {data.GroupName} </Text>
+                    <Text> Sport: {data.Sport} </Text> 
+                    <Text> Description: {data.Description} </Text>
                   <Button title='Delete' onPress = {() => {confirm_delete(data.id)}}/> 
-                </View>
-                
+                  </View>               
+                </TouchableHighlight>
               )
             })
           }
