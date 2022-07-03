@@ -12,6 +12,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MemberInGroup } from './ListofMembers';
 import { MyProfile } from '../Profile/Profile';
+import { SportsProfile } from '../Profile/SportsProfile';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -34,6 +35,7 @@ function OwnerStackScreen() {
       <Stack.Screen name="Owner Listings" component={OwnerListing}/>
       <Stack.Screen name="Member Details" component={MemberInGroup}/>
       <Stack.Screen name="Member profile" component={MyProfile}/>
+      <Stack.Screen name="User Sport Interests" component={SportsProfile} />
     </Stack.Navigator>
   )
 }
@@ -85,8 +87,17 @@ function MemberListing() {
 
 function OwnerListing ({navigation}) {
     const [MyData, setMyData] = useState<Object[] | null> ()
+
+    async function DeleteMembers(input_id) {
+      const {data , error} = await supabase
+      .from('member_list')
+      .delete()
+      .match({sport_id : input_id})
+    }
   
     async function DeleteListing(input_id) {
+      console.log(input_id)
+      DeleteMembers(input_id)
       const { data, error } = await supabase
       .from('listings')
       .delete()
