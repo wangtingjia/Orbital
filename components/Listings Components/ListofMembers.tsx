@@ -38,14 +38,12 @@ export function MemberInGroup({route, navigation}) {
             {
                 Members.all_members.map((data, index) => {
                     return (
-                        <View style = {styles.row_data} key={index}>
+                        <TouchableHighlight onLongPress={() => 
+                            navigation.navigate("Member profile", {uuid: data, visitor: true})}>
+                            <View style = {styles.row_data} key={index}>
                             <Text> {data} </Text>
-                            <TouchableHighlight onLongPress={() => 
-                                navigation.navigate("Member profile", {uuid: data, visitor: true})}> 
-                                <Text> View Member </Text>
-                            </TouchableHighlight>
-                        </View>
-
+                            </View>
+                        </TouchableHighlight>
                     )
                 })
             }

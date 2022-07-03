@@ -147,7 +147,10 @@ export default function SearchListing () {
       )
     }
 
-    async function check_owner (SportIdKey, user) {
+    async function check_owner (SportIdKey) {
+      const user = supabase.auth.user();
+          if (!user) throw new Error("No user on the session!");
+
       const { data, error} = await supabase 
         .from('listings')
         .select('id, owner_id')
@@ -157,12 +160,7 @@ export default function SearchListing () {
           throw(error)
         }
         else {
-          if(data.length) {
-            setIsOwner(true)
-          }
-          else {
-            setIsOwner(false)
-          }
+          data.length ? setIsOwner(true) : setIsOwner(false)
         }
     }
 
@@ -170,7 +168,7 @@ export default function SearchListing () {
       const user = supabase.auth.user();
           if (!user) throw new Error("No user on the session!");
       
-      check_owner(SportIdKey, user)
+      check_owner(SportIdKey)
 
       const { data, error } = await supabase
         .from('member_list')

@@ -71,13 +71,20 @@ export default function CreateListing() {
             isPrivate,
             all_members: [user.id]
         };
-    
-        let { error } = await supabase
+
+        if (GroupName == "") {
+            Alert.alert("Group name cannot be empty")
+        }
+        else if (Sport == "") {
+            Alert.alert("Sport cannot be empty")
+        }
+        else {
+            let { error } = await supabase
             .from("listings")
             .upsert(updates, { returning: "minimal" });
-    
-        if (error) {
-        throw error;
+            if (error) {
+                throw error;
+            }
         }
     
     } catch (error) {
