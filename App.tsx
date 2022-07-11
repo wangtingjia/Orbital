@@ -14,6 +14,7 @@ import { ProfileStack } from './components/Profile/Profile'
 import { FeedStack } from './components/NewsFeed/Feed'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { EditProfile } from './components/Profile/EditProfile'
+import AllChats from './components/Chat/AllChats'
 import BuddyFinding from './components/BuddyFinder/BuddyFinding'
 
 const Stack = createNativeStackNavigator();
@@ -58,6 +59,7 @@ function App() {
             <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} initialParams={{ visitor: false, uuid: session.user ? session.user.id : null }} />
             <Tab.Screen name="Listings" component={Listings} />
             <Tab.Screen name="Find a buddy" component={BuddyFinding} />
+            <Tab.Screen name="Chats" component = {AllChats} />
           </Tab.Navigator> :
         <Stack.Navigator>
           <Stack.Screen name="Welcome" component={Welcome} />
