@@ -122,7 +122,7 @@ export default function AddSport({ navigation, route }) {
                     setSkillLevel(item.value);
                 }} />
             <Input label="Experience" value={experience}
-                autoCompleteType={undefined} onChangeText={(text) => setExperience(text)} />
+                autoCompleteType={undefined} onChangeText={(text) => setExperience(text)} placeholder="Describe your experience in this sport" />
             <Button title="Add to profile" onPress={() => CheckAndAdd()} />
         </View>
     )

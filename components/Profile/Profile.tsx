@@ -16,6 +16,10 @@ const styles = StyleSheet.create({
     profileImage: {
         width: 200,
         height: 200,
+
+            flexDirection: 'row',
+            display: 'flex',
+
     },
     container: {
         flex: 1,
@@ -84,8 +88,8 @@ export function MyProfile({ route, navigation }) {
     }
 
     return (
-        <View>
-            <Image style={styles.profileImage} source={{ uri: avatar_url + "?" + new Date() || "https://i.stack.imgur.com/l60Hf.png" }} />
+        <View style={[styles.container, {paddingBottom: 10}]}>
+            <View style={{alignItems: 'center'}}><Image style={styles.profileImage} source={{ uri: avatar_url + "?" + new Date() || "https://i.stack.imgur.com/l60Hf.png" }} /></View>
             {!route.params.visitor && <View>
                 <Input label="Email" value={session?.user?.email} disabled
                     autoCompleteType={undefined} />
@@ -99,11 +103,11 @@ export function MyProfile({ route, navigation }) {
                     autoCompleteType={undefined} />
             </View>
             {!route.params.visitor &&
-                <View>
-                    <Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} />
-                    <Button title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} />
-                    <Button title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user().id, visitor: false})} />
-                    <Button title="Sign Out" onPress={() => signOut()} />
+                <View style={styles.container}>
+                    <View style={{paddingBottom: 10}}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
+                    <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
+                    <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user().id, visitor: false})} /></View>
+                    <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="Sign Out" onPress={() => signOut()} /></View>
                 </View>}
                 {route.params.visitor && <Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", {id:route.params.uuid, visitor:true})} />}
         </View>

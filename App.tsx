@@ -62,7 +62,6 @@ function App() {
             <Tab.Screen name="Chats" component = {AllChats} />
           </Tab.Navigator> :
         <Stack.Navigator>
-          <Stack.Screen name="Welcome" component={Welcome} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Registration" component={Registration} />
         </Stack.Navigator>}

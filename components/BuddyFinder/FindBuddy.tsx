@@ -106,8 +106,8 @@ function FindBuddy({ navigation }) {
                             <Text>Username: {item.username}</Text>
                             <Text>Skill Level: {item.skill_level}</Text>
                             <Text>Experience: {item.experience}</Text>
-                            <Button title="See User Profile" onPress={() => GoToProfile(item)} />
-                            <Button title="Connect" onPress={() => Connect(item.id)} />
+                            <View style={{paddingBottom:10}}><Button title="See User Profile" onPress={() => GoToProfile(item)} /></View>
+                            <View style={{paddingBottom:10}}><Button title="Connect" onPress={() => Connect(item.id)} /></View>
                             <Text></Text>
                         </View>}
                     </View>

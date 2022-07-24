@@ -12,6 +12,7 @@ import Comments from './Comments';
 import { MyProfile } from '../Profile/Profile';
 import { Session } from '@supabase/supabase-js';
 import { SportsProfile } from '../Profile/SportsProfile';
+import { container } from '../Style/Styles';
 
 const Stack = createNativeStackNavigator();
 
@@ -76,14 +77,14 @@ function AddPost(props) {
 
   const getCurrUser = async () => {
     const { data, error } = await supabase.from("profiles")
-    .select("username")
-    .match({ id: supabase.auth.user()?.id }).single();
+      .select("username")
+      .match({ id: supabase.auth.user()?.id }).single();
     if (data) {
-        setCurrUser(data.username);
-        return data.username;
+      setCurrUser(data.username);
+      return data.username;
     }
     if (error) throw error;
-}
+  }
 
   async function postImage() {
     if (!formData) {
@@ -189,9 +190,12 @@ export function NewsFeed({ navigation, route }) {
     <View>
       <View>
         <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
-          <Text>Do you want to delete this post?</Text>
-          <Button title="Yes" onPress={() => DeletePost()} />
-          <Button title="No" onPress={() => setVisible(false)} />
+          <View style={{ paddingBottom: 10 }}>
+            <Text>Do you want to delete this post?</Text> 
+          </View>
+          <View style={{ paddingBottom: 10 }}><Button title="Yes" onPress={() => DeletePost()} /></View>
+          <View style={{ paddingBottom: 10 }}><Button title="No" onPress={() => setVisible(false)} /></View>
+
         </Overlay>
         <View>
           {route.params.viewOwnPost || <Button title="Create Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
@@ -203,7 +207,7 @@ export function NewsFeed({ navigation, route }) {
         numColumns={1}
         horizontal={false}
         renderItem={({ item, index }) => (
-          <TouchableHighlight key={index} onLongPress={() => showOverlay(item)}>
+          <TouchableHighlight underlayColor="grey" key={index} onLongPress={() => showOverlay(item)} style={[container.horizontal, { alignItems: 'center', padding: 10 }]}>
             {route.params.viewOwnPost && item.uuid == supabase.auth.session()?.user.id ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> :
               !route.params.viewOwnPost ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> : <View></View>}
           </TouchableHighlight>

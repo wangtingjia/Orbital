@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ConnectedBuddiesChat from "./ConnectedBuddiesChat";
 import { supabase } from "../../lib/supabase";
 import { Overlay } from "react-native-elements";
+import { MyProfile } from "../Profile/Profile";
+import { SportsProfile } from "../Profile/SportsProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -73,10 +75,11 @@ function ConnectedBuddies({ navigation }) {
             <FlatList
                 data={buddyList}
                 renderItem={({ item, index }) => (
-                    <View>
-                        <Text>{item.username}</Text>
-                        <Button title="Enter Chat" onPress={() => GoToChat(item)} />
-                        <Button title="Remove Buddy" onPress={() => RemoveBuddy(item, index)} />
+                    <View style={{paddingBottom:10}}>
+                        <Text>Username: {item.username}</Text>
+                        <Text>Added on: {item.date_added.substring(0,10)}</Text>
+                        <View style={{paddingBottom:10}}><Button title="Remove Buddy" onPress={() => RemoveBuddy(item, index)} /></View>
+                        <View style={{paddingBottom:10}}><Button title="View Profile" onPress={() => navigation.navigate("User Profile", { uuid: item.userID, visitor: item.userID == supabase.auth.session()?.user.id ? false : true })}/></View>
                     </View>
                 )}
             />
@@ -88,6 +91,8 @@ export default function ConnectedBuddiesStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Buddies List" component={ConnectedBuddies} options={{ headerShown: false }} />
+            <Stack.Screen name="User Profile" component={MyProfile} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} />
             <Stack.Screen name="Chat" component={ConnectedBuddiesChat} />
         </Stack.Navigator>
     )

@@ -179,8 +179,9 @@ export function EditProfile({ route, navigation, update }) {
                 <Text>Update Saved!</Text>
                 <Button title="ok" onPress={()=>setVisible(false)}/>
             </Overlay>
-            <Text>You can edit your profile here</Text>
+            <View style={{alignItems:'center'}}>
             <Image style={styles.profileImage} source={{ uri: avatar_url || "https://i.stack.imgur.com/l60Hf.png" }} />
+            </View>
             <View>
                 <Input label="Email" value={session?.user?.email}
                     autoCompleteType={undefined} disabled />
@@ -193,14 +194,14 @@ export function EditProfile({ route, navigation, update }) {
                 <Input label="Biography" value={biography}
                     autoCompleteType={undefined} onChangeText={(text) => setBiography(text)} />
             </View>
-            <View>
+            <View style={{paddingBottom: 10}}>
                 <Button
                     title={loading ? "Loading ..." : "Save Updates"}
                     onPress={() => updateProfile({ username, biography })}
                     disabled={loading}
                 />
             </View>
-            <View>
+            <View style={{paddingBottom: 10}}>
                 <Button
                     title="Upload Profile Photo"
                     onPress={() => uploadImage()} />

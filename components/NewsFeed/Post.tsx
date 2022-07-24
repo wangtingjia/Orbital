@@ -49,7 +49,7 @@ function Post(props) {
             <View>
                <Text>{item.username}: {item.caption}</Text>
             </View>
-            <TouchableOpacity onPress={()=> props.navigation.navigate('Comments', { id: item.id, username: item.username, caption: item.caption, user: currUser})}>
+            <TouchableOpacity onPress={()=> props.navigation.navigate('Comments', { id: item.id, username: item.username, caption: item.caption, user: currUser, posterID: item.uuid})}>
             <Text>See comments</Text>
             </TouchableOpacity>
         </View>

@@ -92,10 +92,10 @@ function ConnectionRequests({ navigation }) {
                 data={connectionRequests}
                 renderItem={({ item, index }) => (
                     <View>
-                        <Text>Request to connect from {item.username} on {item.dateRequested.substring(0, 10)}</Text>
-                        <Button title="Accept" onPress={() => AcceptRequest(item, index)} />
-                        <Button title="Reject" onPress={() => RejectRequest(item, index)} />
-                        <Button title="View User" onPress={() => GoToProfile(item)} />
+                        <View style={{paddingBottom: 10}}><Text>Request to connect from {item.username} on {item.dateRequested.substring(0, 10)}</Text></View>
+                        <View style={{paddingBottom: 10}}><Button title="Accept" onPress={() => AcceptRequest(item, index)} /></View>
+                        <View style={{paddingBottom: 10}}><Button title="Reject" onPress={() => RejectRequest(item, index)} /></View>
+                        <View style={{paddingBottom: 10}}><Button title="View User" onPress={() => GoToProfile(item)} /></View>
                         <Text></Text>
                     </View>
                 )}

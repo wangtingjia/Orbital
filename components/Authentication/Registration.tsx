@@ -35,6 +35,12 @@ export default function Registration() {
             setLoading(false);
             return false;
         }
+        let emailDomain = email.slice(-9);
+        if (emailDomain != "u.nus.edu"){
+            Alert.alert("Please sign up with a NUS email!");
+            setLoading(false);
+            return false;
+        }
         const { user, error } = await supabase.auth.signUp({
             email: email,
             password: password,
