@@ -48,7 +48,11 @@ function DisplayAllChats({navigation}) {
 
     useEffect(() => {
         GetBuddyList();
-    }, [])
+        const unsubscribe = navigation.addListener('focus', async () => {
+            await GetBuddyList();
+          });
+          return unsubscribe;
+    }, [navigation])
 
     async function GetBuddyList () {
         const { data, error } = await supabase.from("profiles").select("friend_list").match({ id: supabase.auth.user()?.id }).single();
