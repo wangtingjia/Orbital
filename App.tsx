@@ -49,17 +49,19 @@ function App() {
       getFirstLogin();
     })
   }, [])
-
   return (
     <NavigationContainer>
       {session ?
-        firstLogin ? <EditProfile route={{ uuid: session.user.id }} navigation={null} update={setFirstLogin} /> :
+        firstLogin ? 
+        <Stack.Navigator>
+          <Stack.Screen name ="Edit Profile" component={EditProfile} initialParams={{uuid: session.user.id, firstLogin:true, update: setFirstLogin}} />
+        </Stack.Navigator> :
           <Tab.Navigator>
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false }} />
             <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} initialParams={{ visitor: false, uuid: session.user ? session.user.id : null }} />
             <Tab.Screen name="Listings" component={Listings} />
             <Tab.Screen name="Find a buddy" component={BuddyFinding} />
-            <Tab.Screen name="Chats" component = {AllChats} />
+            <Tab.Screen name="Chats" component={AllChats} options={{ headerShown: false }} />
           </Tab.Navigator> :
         <Stack.Navigator>
           <Stack.Screen name="Login" component={Login} />

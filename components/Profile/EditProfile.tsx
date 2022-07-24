@@ -142,7 +142,7 @@ export function EditProfile({ route, navigation, update }) {
         } finally {
             setLoading(false);
             setVisible(true);
-            update(false);
+            route.params.update(false);
         }
     }
 

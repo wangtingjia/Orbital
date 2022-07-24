@@ -3,6 +3,7 @@ import { View, Image, FlatList, Text, StyleSheet, TouchableOpacity, TouchableHig
 import { Button, Overlay } from 'react-native-elements';
 import { supabase } from '../../lib/supabase';
 import Comments from './Comments';
+import { Video } from 'expo-av';
 
 const dimensions = Dimensions.get('window');
 const imageHeight = Math.round(dimensions.width);
@@ -43,7 +44,7 @@ function Post(props) {
         <View>
             {item.mediatype == 0 ?
                 <View>
-                    <Text>test</Text>
+                    <Video style={{height: imageHeight, width:imageWidth}} source={{ uri: item.filepublicURL }}></Video>
                 </View>
                 :
                 <View>

@@ -118,10 +118,12 @@ export function ProfileStack({ navigation }) {
     return (
         <Stack.Navigator>
             <Stack.Screen name="My Profile" component={MyProfile} initialParams={{ visitor: false, uuid: "" }} />
+            <Stack.Screen name="User Profile" component={MyProfile} initialParams={{ visitor: false, uuid: "" }} />
             <Stack.Screen name="Edit Profile" component={EditProfile} />
             <Stack.Screen name="My Posts" component={NewsFeed} />
             <Stack.Screen name="Comments" component={Comments} />
             <Stack.Screen name="Sports Interests" component={SportsProfile} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} />
             <Stack.Screen name="Add Sports" component={AddSport} />
         </Stack.Navigator>
     )

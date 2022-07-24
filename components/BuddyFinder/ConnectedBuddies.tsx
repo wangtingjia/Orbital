@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { View, FlatList, Text, Button, Alert } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ConnectedBuddiesChat from "./ConnectedBuddiesChat";
+import { View, FlatList, Text, Button, Alert, Dimensions } from "react-native";
+import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { supabase } from "../../lib/supabase";
 import { Overlay } from "react-native-elements";
 import { MyProfile } from "../Profile/Profile";
 import { SportsProfile } from "../Profile/SportsProfile";
 
 const Stack = createNativeStackNavigator();
+const dimensions = Dimensions.get("window")
 
 function ConnectedBuddies({ navigation }) {
     const [buddyList, setBuddyList] = useState([]);
@@ -72,6 +72,7 @@ function ConnectedBuddies({ navigation }) {
     }
     return (
         <View>
+            {!buddyList.length && <View style={{height: dimensions.height-300, alignItems: "center", justifyContent: "center"}}><Text>Head over to search to send out some connection requests!</Text></View>}
             <FlatList
                 data={buddyList}
                 renderItem={({ item, index }) => (
@@ -91,9 +92,8 @@ export default function ConnectedBuddiesStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Buddies List" component={ConnectedBuddies} options={{ headerShown: false }} />
-            <Stack.Screen name="User Profile" component={MyProfile} />
-            <Stack.Screen name="User Sport Interests" component={SportsProfile} />
-            <Stack.Screen name="Chat" component={ConnectedBuddiesChat} />
+            <Stack.Screen name="User Profile" component={MyProfile} options={{headerTopInsetEnabled: false}}/>
+            <Stack.Screen name="User Sport Interests" component={SportsProfile}  options={{headerTopInsetEnabled: false}}/>
         </Stack.Navigator>
     )
 
