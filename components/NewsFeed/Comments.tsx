@@ -42,6 +42,7 @@ function Comments(props) {
         let newComments = [...commentList, newComment];
         //console.log(newComments);
         const { data, error } = await supabase.from('image_posts').update({ comments: newComments }).match({ id: postID });
+        setComment("");
         setUpdating(!updating);
     }
 
@@ -60,7 +61,9 @@ function Comments(props) {
 
     return (
         <View>
-            <Text>{poster} : {caption}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
+                <TouchableHighlight onPress={() => props.navigation.navigate("User Profile", { uuid: props.route.params.posterID, visitor: props.route.params.posterID == supabase.auth.session()?.user.id ? false : true })} underlayColor="grey"><Text>{poster} : {caption}</Text></TouchableHighlight>
+            </View>
             <FlatList
                 style={{ height: 400 }}
                 initialNumToRender={5}
@@ -69,14 +72,14 @@ function Comments(props) {
                 horizontal={false}
 
                 renderItem={({ item, index }) => (
-                    <View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
                         <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
                             <Text>Do you want to delete this comment?</Text>
                             <Button title="Yes" onPress={() => deleteComment(index)} />
                             <Button title="No" onPress={() => setVisible(false)} />
                         </Overlay>
-                        <TouchableHighlight onLongPress={() => props.navigation.navigate("User Profile", { uuid: item.commenterID, visitor: item.commenterID == supabase.auth.session()?.user.id ? false : true })}><Text>{item.commenter}</Text></TouchableHighlight>
-                        <TouchableHighlight onLongPress={() => toggleOverlay(item.commenterID)}><Text>{item.comment}{"\n"}</Text></TouchableHighlight>
+                        <TouchableHighlight onPress={() => props.navigation.navigate("User Profile", { uuid: item.commenterID, visitor: item.commenterID == supabase.auth.session()?.user.id ? false : true })} underlayColor="grey"><Text>{item.commenter} : </Text></TouchableHighlight>
+                        <TouchableHighlight onLongPress={() => toggleOverlay(item.commenterID)} underlayColor="grey"><Text style={{ flexWrap: 'wrap' }}>{item.comment}{"\n"}</Text></TouchableHighlight>
                     </View>
                 )}
             />
