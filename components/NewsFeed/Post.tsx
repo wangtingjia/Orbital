@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
-import { View, Image, FlatList, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { View, Image, FlatList, Text, StyleSheet, TouchableOpacity, TouchableHighlight, Dimensions} from 'react-native';
 import { Button, Overlay } from 'react-native-elements';
 import { supabase } from '../../lib/supabase';
 import Comments from './Comments';
+
+const dimensions = Dimensions.get('window');
+const imageHeight = Math.round(dimensions.width);
+const imageWidth = dimensions.width;
 
 const styles = StyleSheet.create({
     profileImage: {
@@ -43,7 +47,7 @@ function Post(props) {
                 </View>
                 :
                 <View>
-                    <Image style={styles.profileImage} source={{ uri: item.filepublicURL }} />
+                    <Image style={{height: imageHeight, width:imageWidth}} source={{ uri: item.filepublicURL }} />
                 </View>
             }
             <View>

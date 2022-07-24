@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList, TouchableHighlight } from "react-native";
+import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList, TouchableHighlight, Dimensions } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { supabase } from '../../lib/supabase';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,7 +15,7 @@ import { SportsProfile } from '../Profile/SportsProfile';
 import { container } from '../Style/Styles';
 
 const Stack = createNativeStackNavigator();
-
+const dimensions = Dimensions.get('window');
 const styles = StyleSheet.create({
   profileImage: {
     width: 362,
@@ -202,12 +202,12 @@ export function NewsFeed({ navigation, route }) {
         </View>
       </View>
       <FlatList
-        style={{ height: 650 }}
+        style={{ height: dimensions.height - 155 }}
         data={feedPosts}
         numColumns={1}
         horizontal={false}
         renderItem={({ item, index }) => (
-          <TouchableHighlight underlayColor="grey" key={index} onLongPress={() => showOverlay(item)} style={[container.horizontal, { alignItems: 'center', padding: 10 }]}>
+          <TouchableHighlight underlayColor="grey" key={index} onLongPress={() => showOverlay(item)} style={[container.horizontal, { alignItems: 'center', paddingBottom: 10 }]}>
             {route.params.viewOwnPost && item.uuid == supabase.auth.session()?.user.id ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> :
               !route.params.viewOwnPost ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> : <View></View>}
           </TouchableHighlight>
