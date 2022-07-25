@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, FlatList, ScrollView, Alert, TouchableHighlight } from "react-native";
+import { View, StyleSheet, Button, Text, FlatList, ScrollView, Alert, TouchableHighlight, Dimensions } from "react-native";
 import { supabase } from '../../lib/supabase';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PrivateChat from './ChatPage'
 
 
 const Stack = createNativeStackNavigator();
+const dimensions = Dimensions.get('window')
 
 const styles = StyleSheet.create({
     container: {
@@ -54,6 +55,7 @@ function DisplayAllChats({navigation}) {
     }
     return (
         <ScrollView>
+            {!buddyList.length && <View style={{height: dimensions.height-150, alignItems: "center", justifyContent: "center"}}><Text>You have no buddies connected at the moment!</Text></View>}
             <FlatList
                 data={buddyList}
                 renderItem={({ item, index }) => (
