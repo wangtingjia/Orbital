@@ -1,17 +1,9 @@
 import { useEffect, useState } from 'react'
 import { View, StyleSheet, Button, Text, FlatList, ScrollView, Alert, TouchableHighlight } from "react-native";
-import { Input } from "react-native-elements";
-import { NavigationContainer } from '@react-navigation/native';
-import LoginSignupScreen from '../Authentication/LoginSignupScreen'
-import {Session, ApiError} from "@supabase/supabase-js";
 import { supabase } from '../../lib/supabase';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import * as ReactDOM from 'react-dom';
-import { renderNode } from 'react-native-elements/dist/helpers';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PrivateChat from './ChatPage'
-import { RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3 } from 'expo-av/build/Audio';
-import { Routes } from 'react-router-dom';
+
 
 const Stack = createNativeStackNavigator();
 
