@@ -119,8 +119,14 @@ export default function PrivateChat({ route, navigation }) {
         setMessages(data)
     }
     useEffect(() => {
-        getMessages(senderID, receiverID)
-    }, [updated])
+        const mySubscription = supabase
+            .from('messages')
+            .on('*', payload => {
+                getMessages(senderID, receiverID)
+            })
+            .subscribe()
+        mySubscription
+    }, [])
 
     return (
         <View>
