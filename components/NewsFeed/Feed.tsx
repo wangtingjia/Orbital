@@ -17,9 +17,9 @@ import { EditProfile } from '../Profile/EditProfile';
 import AddSport from '../Profile/AddSport';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import {useHeaderHeight} from '@react-navigation/elements';
-
-const Stack = createNativeStackNavigator();
 const dimensions = Dimensions.get('window');
+const Stack = createNativeStackNavigator();
+
 const styles = StyleSheet.create({
   profileImage: {
     width: 362,

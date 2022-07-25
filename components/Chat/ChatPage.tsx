@@ -96,7 +96,7 @@ export default function PrivateChat({ route, navigation }) {
         const { data, error } = await supabase
             .from("messages")
             .delete().match({ id: itemID }).single();
-        console.log(data)
+        //console.log(data)
         setUpdated(!updated)
         toggleVisibility(-1)
     }
@@ -115,7 +115,7 @@ export default function PrivateChat({ route, navigation }) {
             throw (error)
         }
         data.reverse()
-        console.log(data)
+        //console.log(data)
         setMessages(data)
     }
     useEffect(() => {
@@ -123,16 +123,24 @@ export default function PrivateChat({ route, navigation }) {
             .from('messages')
             .on('*', payload => {
                 getMessages(senderID, receiverID)
+                console.log("HERE")
             })
             .subscribe()
-        mySubscription
+
+            return () => {
+                supabase.removeSubscription(mySubscription)
+            }
     }, [])
+
+    useEffect(()=>{
+        getMessages(senderID, receiverID)
+    },[])
 
     return (
         <View>
             <FlatList inverted={true} data={Messages} horizontal={false} style={{ height: dimensions.height - 200 }} renderItem={({ item, index }) => (
                 <View>
-                    <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+                    <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)} backdropStyle={{opacity:0.5}}>
                         <Text>Do you want to delete this message?</Text>
                         <Button title="Yes" onPress={() => deleteMessage(selectedMessage)} />
                         <Button title="No" onPress={() => toggleVisibility(-1)} />

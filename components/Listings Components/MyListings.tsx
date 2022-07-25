@@ -189,7 +189,7 @@ function OwnerListing({ navigation }) {
   return (
     <View>
       <FlatList data={MyData} renderItem={({ item, index }) => (
-        <TouchableHighlight underlayColor="#F5DEB3" onPress={() => navigation.navigate('Member Details', { input_id: item.id, owner: true, is_private: item.isPrivate })}
+        <TouchableHighlight underlayColor="#F5DEB3" onPress={() => navigation.navigate('Member Details', { input_id: item.id, isOwner: true, is_private: item.isPrivate })}
           onLongPress={() => { confirm_delete(item) }}>
           <View style={styles.row_data} key={index}>
             <Text> GroupName: {item.GroupName} </Text>

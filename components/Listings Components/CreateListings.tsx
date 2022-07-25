@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView, Alert, Dimensions } from "react-native";
 import { Input } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../Authentication/LoginSignupScreen'
@@ -8,7 +8,9 @@ import { supabase } from '../../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import * as ReactDOM from 'react-dom';
 import { renderNode } from 'react-native-elements/dist/helpers';
-
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/elements';
+const dimensions = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         marginTop: 40,
