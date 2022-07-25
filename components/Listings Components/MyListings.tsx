@@ -123,7 +123,7 @@ function MemberListing({ navigation }) {
           </TouchableHighlight>}
         </View>
       )} />
-      <Button title='Refresh' style={styles.bottom} onPress={() => FetchData()} />
+      <View style={{ marginBottom: 5, marginHorizontal: 10 }}><Button title='Refresh' style={styles.bottom} onPress={() => FetchData()} /></View>
     </View>
   )
 }
@@ -190,7 +190,7 @@ function OwnerListing({ navigation }) {
     <View>
       <FlatList data={MyData} renderItem={({ item, index }) => (
         <TouchableHighlight underlayColor="#F5DEB3" onPress={() => navigation.navigate('Member Details', { input_id: item.id, owner: true, is_private: item.isPrivate })}
-        onLongPress={()=>{confirm_delete(item)}}>
+          onLongPress={() => { confirm_delete(item) }}>
           <View style={styles.row_data} key={index}>
             <Text> GroupName: {item.GroupName} </Text>
             <Text> Sport: {item.Sport} </Text>
@@ -200,7 +200,7 @@ function OwnerListing({ navigation }) {
       )} />
 
 
-      <Button title='Refresh' style={styles.bottom} onPress={() => FetchListings()} />
+      <View style={{ marginBottom: 5, marginHorizontal: 10 }}><Button title='Refresh' style={styles.bottom} onPress={() => FetchListings()} /></View>
     </View>
   )
 

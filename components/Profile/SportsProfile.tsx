@@ -38,17 +38,17 @@ export function SportsProfile({ navigation, route }) {
             <FlatList
                 data={sportsList}
                 renderItem={({ item, index }) => (
-                    <View style={{paddingBottom:10}}>
+                    <View style={{paddingBottom:10, marginHorizontal:10}}>
                         <View>
                         <Text>Sport: {item.sportName}</Text>
                         <Text>Skill Level: {item.skillLevel}</Text>
                         <Text>Description: {item.experience}</Text>
                         </View>
-                        {!route.params.visitor && <Button title="Edit" onPress={()=> navigation.navigate("Add Sports", {skillLevel: item.skillLevel, experience:item.experience, disable: true, selectedSport: item.sportName, sportsList:sportsList})}/>}
+                        {!route.params.visitor && <View><Button title="Edit" onPress={()=> navigation.navigate("Add Sports", {skillLevel: item.skillLevel, experience:item.experience, disable: true, selectedSport: item.sportName, sportsList:sportsList})}/></View>}
                     </View>
                 )}
             />
-            <View>
+            <View style={{marginHorizontal:10}}>
                 {!route.params.visitor && <Button title="Add Sport" onPress={() => navigation.navigate("Add Sports", { skillLevel: null, experience: "", disable: false, selectedSport: "", sportsList:sportsList})} />}
             </View>
         </View>

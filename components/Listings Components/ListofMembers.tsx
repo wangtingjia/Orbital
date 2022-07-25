@@ -66,7 +66,7 @@ export function MemberInGroup({ route, navigation }) {
 
     return (
         <View>
-            {route.params.is_private == 'yes' && <Button onPress={() => { navigation.navigate("Join Requests", { groupID: route.params.input_id }) }} title="See Join Requests" />}
+            {route.params.is_private == 'yes' && route.params.isOwner && <Button onPress={() => { navigation.navigate("Join Requests", { groupID: route.params.input_id }) }} title="See Join Requests" />}
             <FlatList data={Members} renderItem={({ item, index }) => (
                 <TouchableHighlight underlayColor="#F5DEB3" onPress={() => { navigation.navigate("Member Profile", { visitor: true, uuid: item.uuid }) }}
                     onLongPress={() => { toggleOverlay(item) }}

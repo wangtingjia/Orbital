@@ -15,6 +15,8 @@ import { SportsProfile } from '../Profile/SportsProfile';
 import { container } from '../Style/Styles';
 import { EditProfile } from '../Profile/EditProfile';
 import AddSport from '../Profile/AddSport';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/elements';
 
 const Stack = createNativeStackNavigator();
 const dimensions = Dimensions.get('window');
@@ -132,16 +134,16 @@ function AddPost(props) {
         <Input label="Caption" value={caption} placeholder="Type your caption here"
           autoCompleteType={undefined} onChangeText={(text) => setCaption(text)} />
       </View>
-      <View style={{ paddingBottom: 10 }}>
+      <View style={{ marginHorizontal: 10, marginBottom:10 }}>
         <Button title='Choose Photo/Video from Library' onPress={() => uploadImage('library')} />
       </View>
-      <View style={{ paddingBottom: 10 }}>
+      <View style={{  marginHorizontal: 10 }}>
         <Button title='Take a Photo/Video' onPress={() => uploadImage('camera')} />
       </View>
-      <View style={{ paddingBottom: 10 }}>
+      <View style={{  marginHorizontal: 10 }}>
         <CheckBox title="Private Post? (Only your friends can see)" checked={toggleCheckBox} onPress={() => { toggleCheck() }} />
       </View>
-      <View style={{ paddingBottom: 10 }}>
+      <View style={{ marginHorizontal: 10 }}>
         <Button title='Post' onPress={() => postImage()} />
       </View>
     </View>
@@ -155,6 +157,8 @@ export function NewsFeed({ navigation, route }) {
   const [selectedPost, setSelectedPost] = useState<Object | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [friendList, setFriendList] = useState<Object[]>([]);
+  const tabBarHeight = useBottomTabBarHeight();
+  const topBarHeight = useHeaderHeight();
 
   useEffect(() => {
     getAllPosts();
@@ -202,7 +206,14 @@ export function NewsFeed({ navigation, route }) {
       throw error;
     }
     data.reverse();
-    setFeedPosts(data);
+    if (route.params.viewOwnPost) {
+      let feedData = data.filter((post) => {
+        return post.uuid == supabase.auth.user().id
+      })
+      setFeedPosts(feedData)
+    } else {
+      setFeedPosts(data);
+    }
   }
 
   return (
@@ -216,12 +227,17 @@ export function NewsFeed({ navigation, route }) {
           <View style={{ paddingBottom: 10 }}><Button title="No" onPress={() => setVisible(false)} /></View>
 
         </Overlay>
-        <View>
+        <View style={{margin:10}}>
           {route.params.viewOwnPost || <Button title="Create Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
         </View>
+        {!feedPosts.length && route.params.viewOwnPost && <View style={{ height: dimensions.height - 200, alignItems: "center", justifyContent: "center" }}>
+          <Text>You have not posted anything yet!</Text>
+          <TouchableHighlight underlayColor="grey" onPress={()=>{navigation.navigate("Feed")}}><Text style={{color:"blue"}}>Head over to Feed to post your first image!</Text></TouchableHighlight>
+        </View>}
+
       </View>
       <FlatList
-        style={{ height: dimensions.height - 155 }}
+        style={{ height: dimensions.height - tabBarHeight-topBarHeight-130}}
         data={feedPosts}
         numColumns={1}
         horizontal={false}

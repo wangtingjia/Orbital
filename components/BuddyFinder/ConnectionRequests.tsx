@@ -89,15 +89,15 @@ function ConnectionRequests({ navigation }) {
 
     return (
         <View>
-            {!connectionRequests.length && <View style={{height: dimensions.height-300, alignItems: "center", justifyContent: "center"}}><Text>You do not have any requests to connect at the moment</Text></View>}
+            {!connectionRequests.length && <View style={{ height: dimensions.height - 300, alignItems: "center", justifyContent: "center" }}><Text>You do not have any requests to connect at the moment</Text></View>}
             <FlatList
                 data={connectionRequests}
                 renderItem={({ item, index }) => (
                     <View>
-                        <View style={{paddingBottom: 10}}><Text>Request to connect from {item.username} on {item.dateRequested.substring(0, 10)}</Text></View>
-                        <View style={{paddingBottom: 10}}><Button title="Accept" onPress={() => AcceptRequest(item, index)} /></View>
-                        <View style={{paddingBottom: 10}}><Button title="Reject" onPress={() => RejectRequest(item, index)} /></View>
-                        <View style={{paddingBottom: 10}}><Button title="View User" onPress={() => GoToProfile(item)} /></View>
+                        <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Text>Request to connect from {item.username} on {item.dateRequested.substring(0, 10)}</Text></View>
+                        <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="Accept" onPress={() => AcceptRequest(item, index)} /></View>
+                        <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="Reject" onPress={() => RejectRequest(item, index)} /></View>
+                        <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="View User" onPress={() => GoToProfile(item)} /></View>
                         <Text></Text>
                     </View>
                 )}
@@ -110,8 +110,8 @@ export default function ConnectionRequestStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Connection Request" component={ConnectionRequests} options={{ headerShown: false }} />
-            <Stack.Screen name="User Profile" component={MyProfile}  options={{headerTopInsetEnabled: false}} />
-            <Stack.Screen name="User Sport Interests" component={SportsProfile}  options={{headerTopInsetEnabled: false}} />
+            <Stack.Screen name="User Profile" component={MyProfile} options={{ headerTopInsetEnabled: false }} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} options={{ headerTopInsetEnabled: false }} />
         </Stack.Navigator>
     )
 }

@@ -56,7 +56,7 @@ function App() {
         <Stack.Navigator>
           <Stack.Screen name ="Edit Profile" component={EditProfile} initialParams={{uuid: session.user.id, firstLogin:true, update: setFirstLogin}} />
         </Stack.Navigator> :
-          <Tab.Navigator>
+          <Tab.Navigator initialRouteName='Feed'>
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false }} />
             <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} initialParams={{ visitor: false, uuid: session.user ? session.user.id : null }} />
             <Tab.Screen name="Listings" component={Listings} />

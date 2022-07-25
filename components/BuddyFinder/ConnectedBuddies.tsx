@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, FlatList, Text, Button, Alert, Dimensions } from "react-native";
+import { View, FlatList, Text, Button, Alert, Dimensions, TouchableHighlight } from "react-native";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { supabase } from "../../lib/supabase";
 import { Overlay } from "react-native-elements";
@@ -72,15 +72,17 @@ function ConnectedBuddies({ navigation }) {
     }
     return (
         <View>
-            {!buddyList.length && <View style={{height: dimensions.height-300, alignItems: "center", justifyContent: "center"}}><Text>Head over to search to send out some connection requests!</Text></View>}
+            {!buddyList.length && <View style={{ height: dimensions.height - 300, alignItems: "center", justifyContent: "center" }}>
+                <TouchableHighlight underlayColor="grey" onPress={() => { navigation.navigate("Search") }}><Text style={{ color: "blue" }}>Head over to search to send out some connection requests!</Text></TouchableHighlight></View>}
             <FlatList
                 data={buddyList}
+                style={{paddingTop:10}}
                 renderItem={({ item, index }) => (
-                    <View style={{paddingBottom:10}}>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10, backgroundColor: "#F5DEB3" }}>
                         <Text>Username: {item.username}</Text>
-                        <Text>Added on: {item.date_added.substring(0,10)}</Text>
-                        <View style={{paddingBottom:10}}><Button title="Remove Buddy" onPress={() => RemoveBuddy(item, index)} /></View>
-                        <View style={{paddingBottom:10}}><Button title="View Profile" onPress={() => navigation.navigate("User Profile", { uuid: item.userID, visitor: item.userID == supabase.auth.session()?.user.id ? false : true })}/></View>
+                        <Text>Added on: {item.date_added.substring(0, 10)}</Text>
+                        <View style={{ paddingBottom: 10 }}><Button title="Remove Buddy" onPress={() => RemoveBuddy(item, index)} /></View>
+                        <View style={{ paddingBottom: 10 }}><Button title="View Profile" onPress={() => navigation.navigate("User Profile", { uuid: item.userID, visitor: item.userID == supabase.auth.session()?.user.id ? false : true })} /></View>
                     </View>
                 )}
             />
@@ -92,8 +94,8 @@ export default function ConnectedBuddiesStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Buddies List" component={ConnectedBuddies} options={{ headerShown: false }} />
-            <Stack.Screen name="User Profile" component={MyProfile} options={{headerTopInsetEnabled: false}}/>
-            <Stack.Screen name="User Sport Interests" component={SportsProfile}  options={{headerTopInsetEnabled: false}}/>
+            <Stack.Screen name="User Profile" component={MyProfile} options={{ headerTopInsetEnabled: false }} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} options={{ headerTopInsetEnabled: false }} />
         </Stack.Navigator>
     )
 

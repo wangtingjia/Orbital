@@ -105,6 +105,7 @@ export default function AddSport({ navigation, route }) {
     return (
         <View>
             <Dropdown
+            style={{borderColor:"black", borderWidth:2, borderRadius:2, margin:10}}
                 disable={disable}
                 data={sports}
                 placeholder={disable ? route.params.selectedSport : "Select Sport"}
@@ -114,6 +115,7 @@ export default function AddSport({ navigation, route }) {
                     setSelectedSport(item.label);
                 }} />
             <Dropdown
+            style={{borderColor:"black", borderWidth:2, borderRadius:2, margin:10 }}
                 data={skillLevels}
                 placeholder="Select Skill Level"
                 labelField="label"
@@ -123,7 +125,7 @@ export default function AddSport({ navigation, route }) {
                 }} />
             <Input label="Experience" value={experience}
                 autoCompleteType={undefined} onChangeText={(text) => setExperience(text)} placeholder="Describe your experience in this sport" />
-            <Button title="Add to profile" onPress={() => CheckAndAdd()} />
+            <View style={{marginHorizontal:10}}><Button title="Add to profile" onPress={() => CheckAndAdd()} /></View>
         </View>
     )
 }

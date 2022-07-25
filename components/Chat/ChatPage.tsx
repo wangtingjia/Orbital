@@ -96,12 +96,12 @@ export default function PrivateChat({ route, navigation }) {
         const { data, error } = await supabase
             .from("messages")
             .delete().match({ id: itemID }).single();
-            console.log(data)
+        console.log(data)
         setUpdated(!updated)
         toggleVisibility(-1)
     }
 
-    function toggleVisibility(itemID){
+    function toggleVisibility(itemID) {
         setSelectedMessage(itemID)
         setVisible(!visible)
     }
@@ -133,7 +133,7 @@ export default function PrivateChat({ route, navigation }) {
                     </Overlay>
                     {item.sender_id == senderID ?
                         <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 9, flex: 1, alignSelf: 'flex-end', alignItems: 'flex-end', flexWrap: 'wrap', flexDirection: 'row', padding: 10, marginRight: 10, marginBottom: 1, backgroundColor: "green" }}>
-                            <TouchableHighlight onLongPress={() => {toggleVisibility(item.id) }} underlayColor="green"><Text style={{ color: "white" }}>{item.message}{'\n'}{item.created_at.substring(0, 10)} {item.created_at.substring(11, 16)} hours</Text></TouchableHighlight>
+                            <TouchableHighlight onLongPress={() => { toggleVisibility(item.id) }} underlayColor="green"><Text style={{ color: "white" }}>{item.message}{'\n'}{item.created_at.substring(0, 10)} {item.created_at.substring(11, 16)} hours</Text></TouchableHighlight>
                         </View>
                         :
                         <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 9, flex: 1, alignSelf: 'flex-start', flexWrap: 'wrap', flexDirection: 'row', padding: 10, marginLeft: 10, backgroundColor: "grey" }}>
@@ -141,15 +141,15 @@ export default function PrivateChat({ route, navigation }) {
                         </View>}
                 </View>
             )} />
-            <TextInput
+            <View style={{ marginHorizontal: 10 }}><TextInput
                 style={{ bottom: 0 }}
                 placeholder="your message"
                 value={UserMessage || ""}
                 onChangeText={(text) => SetUserMessage(text)} />
-            <Button
-                title={"Send message"}
-                onPress={() => sendMessage(senderID, receiverID)}
-            />
+                <Button
+                    title={"Send message"}
+                    onPress={() => sendMessage(senderID, receiverID)}
+                /></View>
         </View>
     )
 

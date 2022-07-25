@@ -149,15 +149,15 @@ export function MyProfile({ route, navigation }) {
             </View>
             {!route.params.visitor &&
                 <View style={styles.container}>
-                    <View style={{ paddingBottom: 10 }}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", { id: supabase.auth.user().id, visitor: false })} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="Sign Out" onPress={() => signOut()} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button style={{ paddingBottom: 10 }} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button style={{ paddingBottom: 10 }} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", { id: supabase.auth.user().id, visitor: false })} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button style={{ paddingBottom: 10 }} title="Sign Out" onPress={() => signOut()} /></View>
                 </View>}
             {route.params.visitor &&
                 <View>
-                    <View style={{ paddingBottom: 10 }}><Button title="See Sports Interests"  onPress={() => navigation.navigate("User Sport Interests", { id: route.params.uuid, visitor: true })} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button title="Send Connection Request" onPress={() => Connect(route.params.uuid)} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", { id: route.params.uuid, visitor: true })} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="Send Connection Request" onPress={() => Connect(route.params.uuid)} /></View>
                 </View>}
         </View>
     )

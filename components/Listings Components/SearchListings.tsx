@@ -136,14 +136,14 @@ export default function SearchListing() {
     let { data, error } = await supabase.from("listings").select("join_requests").match({ id: SportIdKey }).single()
     if (error) throw error
     else {
-      let requestExist = data.join_requests.filter((request)=>{
+      let requestExist = data.join_requests.filter((request) => {
         return request.uuid == user.id
       })
-      if (requestExist.length){
+      if (requestExist.length) {
         Alert.alert("You have a pending join request, please wait for a response")
         return
       }
-      let { error } = await supabase.from("listings").update({ join_requests: [...data.join_requests, { uuid: user.id, username: username, date_requested: new Date() }] }).match({id: SportIdKey}).single()
+      let { error } = await supabase.from("listings").update({ join_requests: [...data.join_requests, { uuid: user.id, username: username, date_requested: new Date() }] }).match({ id: SportIdKey }).single()
       if (error) throw error
     }
     Alert.alert("Join Request Sent")
@@ -223,13 +223,14 @@ export default function SearchListing() {
     <View>
       <View style={styles.verticallySpaced}>
         <Input
-          label="Your input: "
+          label="Search"
+          placeholder='Input your search terms'
           value={MyInput || ""}
           onChangeText={(text) => setMyInput(text)}
           autoCompleteType={undefined} />
-        <Button title='Search by groupname' onPress={() => GetListingbyGroupName(MyInput)} />
-        <Button title='Search by sport ' onPress={() => GetListingbySport(MyInput)} />
-        <Button title='Show all listings' onPress={() => GetAllListing()} />
+        <View style={{ marginHorizontal: 10, marginBottom: 5 }}><Button title='Search by groupname' onPress={() => GetListingbyGroupName(MyInput)} /></View>
+        <View style={{ marginHorizontal: 10, marginBottom: 5 }}><Button title='Search by sport ' onPress={() => GetListingbySport(MyInput)} /></View>
+        <View style={{ marginHorizontal: 10, marginBottom: 5 }}><Button title='Show all listings' onPress={() => GetAllListing()} /></View>
       </View>
       <FlatList horizontal={false} data={MyData} style={{ height: dimensions.height - 400 }} renderItem={({ item, index }) => (
         <View>
@@ -238,7 +239,7 @@ export default function SearchListing() {
             <Text> Sport: {item.Sport} </Text>
             <Text> Description: {item.Description}</Text>
             <Text> Private: {item.isPrivate}</Text>
-            <Button title='Join group' onPress={() => check_membership(item.id, item.isPrivate)} />
+            <View style={{ marginHorizontal: 10 }}><Button title='Join group' onPress={() => check_membership(item.id, item.isPrivate)} /></View>
           </View>
         </View>
       )} />

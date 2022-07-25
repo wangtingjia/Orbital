@@ -89,6 +89,7 @@ function FindBuddy({ navigation }) {
     return (
         <View>
             <Dropdown
+                style={{ borderColor: "black", borderWidth: 2, borderRadius: 2, margin: 10 }}
                 data={sports}
                 placeholder={"Select Sport"}
                 labelField="label"
@@ -96,18 +97,18 @@ function FindBuddy({ navigation }) {
                 onChange={item => {
                     setSelectedSport(item.label);
                 }} />
-            <Button title="Search" onPress={() => GetUserList()} />
+            <View style={{ marginHorizontal: 10 }}><Button title="Search" onPress={() => GetUserList()} /></View>
             <Text></Text>
             <FlatList
                 data={userList}
                 renderItem={({ item, index }) => (
                     <View>
-                        {item.id != supabase.auth.user()?.id && <View>
+                        {item.id != supabase.auth.user()?.id && <View style={{ marginHorizontal: 10, backgroundColor: "#F5DEB3", marginBottom: 10 }}>
                             <Text>Username: {item.username}</Text>
                             <Text>Skill Level: {item.skill_level}</Text>
                             <Text>Experience: {item.experience}</Text>
-                            <View style={{paddingBottom:10}}><Button title="See User Profile" onPress={() => GoToProfile(item)} /></View>
-                            <View style={{paddingBottom:10}}><Button title="Connect" onPress={() => Connect(item.id)} /></View>
+                            <View style={{ paddingBottom: 10 }}><Button title="See User Profile" onPress={() => GoToProfile(item)} /></View>
+                            <View style={{ paddingBottom: 10 }}><Button title="Connect" onPress={() => Connect(item.id)} /></View>
                             <Text></Text>
                         </View>}
                     </View>
@@ -123,8 +124,8 @@ export default function FindBuddyStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Search" component={FindBuddy} options={{ headerShown: false }} />
-            <Stack.Screen name="User Profile" component={MyProfile} options={{headerTopInsetEnabled: false}} />
-            <Stack.Screen name="User Sport Interests" component={SportsProfile} options={{headerTopInsetEnabled: false}}/>
+            <Stack.Screen name="User Profile" component={MyProfile} options={{ headerTopInsetEnabled: false }} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} options={{ headerTopInsetEnabled: false }} />
         </Stack.Navigator>
     )
 }
