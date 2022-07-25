@@ -134,13 +134,47 @@ var sports = [
     {
         value: 1,
         label: 'volleyball'
-    },
-    {
+    }, {
         value: 2,
         label: 'soccer'
-    },
-    {
+    }, {
         value: 3,
         label: 'basketball'
-    },
+    }, {
+        value: 4,
+        label: 'tchoukball'
+    }, {
+        value: 5,
+        label: 'badminton'
+    }, {
+        value: 6,
+        label: 'tennis'
+    }, {
+        value: 7,
+        label: 'swimming'
+    }, {
+        value: 8,
+        label: 'gymming'
+    }, {
+        value: 9,
+        label: 'archery'
+    }, {
+        value: 10,
+        label: 'dodgeball'
+    }, {
+        value: 11,
+        label: 'baseball'
+    }, {
+        value: 12,
+        label: 'climbing'
+    }, {
+        value: 13,
+        label: 'bowling'
+    }, {
+        value: 14,
+        label: 'running'
+    }, {
+        value: 15,
+        label: 'dancing'
+    }
 ]

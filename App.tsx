@@ -16,6 +16,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { EditProfile } from './components/Profile/EditProfile'
 import AllChats from './components/Chat/AllChats'
 import BuddyFinding from './components/BuddyFinder/BuddyFinding'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,11 +53,34 @@ function App() {
   return (
     <NavigationContainer>
       {session ?
-        firstLogin ? 
-        <Stack.Navigator>
-          <Stack.Screen name ="Edit Profile" component={EditProfile} initialParams={{uuid: session.user.id, firstLogin:true, update: setFirstLogin}} />
-        </Stack.Navigator> :
-          <Tab.Navigator initialRouteName='Feed'>
+        firstLogin ?
+          <Stack.Navigator>
+            <Stack.Screen name="Initialise Profile" component={EditProfile} initialParams={{ uuid: session.user.id, firstLogin: true, update: setFirstLogin }} />
+          </Stack.Navigator> :
+          <Tab.Navigator initialRouteName='Feed'
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+
+                if (route.name === 'Find a buddy') {
+                  iconName = 'person-add'
+                } else if (route.name === 'Feed') {
+                  iconName = 'camera'
+                } else if (route.name === 'Profile'){
+                  iconName = 'card'
+                } else if (route.name === 'Listings'){
+                  iconName = 'clipboard'
+                } else if (route.name === 'Chats'){
+                  iconName = 'chatbubbles'
+                }
+
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: 'tomato',
+              tabBarInactiveTintColor: 'gray',
+            })}
+          >
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false }} />
             <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} initialParams={{ visitor: false, uuid: session.user ? session.user.id : null }} />
             <Tab.Screen name="Listings" component={Listings} />

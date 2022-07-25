@@ -8,15 +8,49 @@ var sports = [
     {
         value: 1,
         label: 'volleyball'
-    },
-    {
+    }, {
         value: 2,
         label: 'soccer'
-    },
-    {
+    }, {
         value: 3,
         label: 'basketball'
-    },
+    }, {
+        value: 4,
+        label: 'tchoukball'
+    }, {
+        value: 5,
+        label: 'badminton'
+    }, {
+        value: 6,
+        label: 'tennis'
+    }, {
+        value: 7,
+        label: 'swimming'
+    }, {
+        value: 8,
+        label: 'gymming'
+    }, {
+        value: 9,
+        label: 'archery'
+    }, {
+        value: 10,
+        label: 'dodgeball'
+    }, {
+        value: 11,
+        label: 'baseball'
+    }, {
+        value: 12,
+        label: 'climbing'
+    }, {
+        value: 13,
+        label: 'bowling'
+    }, {
+        value: 14,
+        label: 'running'
+    }, {
+        value: 15,
+        label: 'dancing'
+    }
 ]
 
 var skillLevels = [
@@ -95,7 +129,7 @@ export default function AddSport({ navigation, route }) {
         if (error) {
             throw error;
         } else {
-            let updatedSportsList = sportsList? sportsList.filter(obj => obj.sportName !== selectedSport) : [];
+            let updatedSportsList = sportsList ? sportsList.filter(obj => obj.sportName !== selectedSport) : [];
             let { data, error } = await supabase.from("profiles").update({ sports_list: [...updatedSportsList, newSport] })
                 .match({ id: supabase.auth.user()?.id })
             if (error) throw error;
@@ -105,7 +139,7 @@ export default function AddSport({ navigation, route }) {
     return (
         <View>
             <Dropdown
-            style={{borderColor:"black", borderWidth:2, borderRadius:2, margin:10}}
+                style={{ borderColor: "black", borderWidth: 2, borderRadius: 2, margin: 10 }}
                 disable={disable}
                 data={sports}
                 placeholder={disable ? route.params.selectedSport : "Select Sport"}
@@ -115,7 +149,7 @@ export default function AddSport({ navigation, route }) {
                     setSelectedSport(item.label);
                 }} />
             <Dropdown
-            style={{borderColor:"black", borderWidth:2, borderRadius:2, margin:10 }}
+                style={{ borderColor: "black", borderWidth: 2, borderRadius: 2, margin: 10 }}
                 data={skillLevels}
                 placeholder="Select Skill Level"
                 labelField="label"
@@ -125,7 +159,7 @@ export default function AddSport({ navigation, route }) {
                 }} />
             <Input label="Experience" value={experience}
                 autoCompleteType={undefined} onChangeText={(text) => setExperience(text)} placeholder="Describe your experience in this sport" />
-            <View style={{marginHorizontal:10}}><Button title="Add to profile" onPress={() => CheckAndAdd()} /></View>
+            <View style={{ marginHorizontal: 10 }}><Button title="Add to profile" onPress={() => CheckAndAdd()} /></View>
         </View>
     )
 }
