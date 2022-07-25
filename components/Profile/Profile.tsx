@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
 
-            flexDirection: 'row',
-            display: 'flex',
+        flexDirection: 'row',
+        display: 'flex',
 
     },
     container: {
@@ -46,7 +46,7 @@ export function MyProfile({ route, navigation }) {
     }, [session, route.params.visitor]);
 
     useEffect(() => {
-        if (route.params.visitor){
+        if (route.params.visitor) {
             return;
         }
         const unsubscribe = navigation.addListener('focus', () => {
@@ -57,6 +57,51 @@ export function MyProfile({ route, navigation }) {
 
     async function signOut() {
         supabase.auth.signOut();
+    }
+
+    const CheckIfFriends = async (id) => {
+        const { data, error } = await supabase.from("profiles").select("friend_list").match({ id: supabase.auth.user()?.id }).single();
+        if (error) throw error;
+        let currFriendList = data.friend_list;
+        let alreadyFriends = false;
+        currFriendList.forEach(element => {
+            if (element.userID == id) alreadyFriends = true;
+            return;
+        });
+        return alreadyFriends
+    }
+
+    const Connect = async (id) => {
+        let alreadyFriends = await CheckIfFriends(id);
+        if (alreadyFriends) {
+            Alert.alert("You are already connected");
+            return;
+        }
+        const { data, error } = await supabase.from("profiles").select("connection_requests").match({ id: id }).single();
+        if (data) {
+            let currConnectionRequests = data.connection_requests;
+            let requested = false;
+            currConnectionRequests.forEach(element => {
+                if (element.userID == supabase.auth.user()?.id) {
+                    requested = true;
+                    return;
+                }
+            });
+            if (requested) {
+                Alert.alert("You have already sent a request");
+                return;
+            }
+            let newConnectionRequest = {
+                userID: supabase.auth.user()?.id,
+                username: username,
+                dateRequested: new Date(),
+            }
+            let newConnectionRequests = [...data.connection_requests, newConnectionRequest]
+            const { error } = await supabase.from("profiles").update({ connection_requests: newConnectionRequests }, { returning: "minimal" }).match({ id: id }).single();
+            if (error) throw error;
+        }
+        if (error) throw error;
+        Alert.alert("Request to connect sent!")
     }
 
     async function getProfile(uuid) {
@@ -70,7 +115,7 @@ export function MyProfile({ route, navigation }) {
                 .select(`username, avatar_url, biography`)
                 .eq("id", route.params.visitor ? route.params.uuid : user.id)
                 .single();
-                console.log("here");
+            console.log("here");
             if (error && status !== 406) {
                 throw error;
             }
@@ -88,8 +133,8 @@ export function MyProfile({ route, navigation }) {
     }
 
     return (
-        <View style={[styles.container, {paddingBottom: 10}]}>
-            <View style={{alignItems: 'center'}}><Image style={styles.profileImage} source={{ uri: avatar_url + "?" + new Date() || "https://i.stack.imgur.com/l60Hf.png" }} /></View>
+        <View style={[styles.container, { paddingBottom: 10 }]}>
+            <View style={{ alignItems: 'center' }}><Image style={styles.profileImage} source={{ uri: avatar_url + "?" + new Date() || "https://i.stack.imgur.com/l60Hf.png" }} /></View>
             {!route.params.visitor && <View>
                 <Input label="Email" value={session?.user?.email} disabled
                     autoCompleteType={undefined} />
@@ -104,12 +149,16 @@ export function MyProfile({ route, navigation }) {
             </View>
             {!route.params.visitor &&
                 <View style={styles.container}>
-                    <View style={{paddingBottom: 10}}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
-                    <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
-                    <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user().id, visitor: false})} /></View>
-                    <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="Sign Out" onPress={() => signOut()} /></View>
+                    <View style={{ paddingBottom: 10 }}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
+                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
+                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", { id: supabase.auth.user().id, visitor: false })} /></View>
+                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="Sign Out" onPress={() => signOut()} /></View>
                 </View>}
-                {route.params.visitor && <Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", {id:route.params.uuid, visitor:true})} />}
+            {route.params.visitor &&
+                <View>
+                    <View style={{ paddingBottom: 10 }}><Button title="See Sports Interests"  onPress={() => navigation.navigate("User Sport Interests", { id: route.params.uuid, visitor: true })} /></View>
+                    <View style={{ paddingBottom: 10 }}><Button title="Send Connection Request" onPress={() => Connect(route.params.uuid)} /></View>
+                </View>}
         </View>
     )
 }
@@ -118,10 +167,12 @@ export function ProfileStack({ navigation }) {
     return (
         <Stack.Navigator>
             <Stack.Screen name="My Profile" component={MyProfile} initialParams={{ visitor: false, uuid: "" }} />
+            <Stack.Screen name="User Profile" component={MyProfile} initialParams={{ visitor: false, uuid: "" }} />
             <Stack.Screen name="Edit Profile" component={EditProfile} />
             <Stack.Screen name="My Posts" component={NewsFeed} />
             <Stack.Screen name="Comments" component={Comments} />
             <Stack.Screen name="Sports Interests" component={SportsProfile} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} />
             <Stack.Screen name="Add Sports" component={AddSport} />
         </Stack.Navigator>
     )

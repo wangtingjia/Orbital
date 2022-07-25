@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderColor: "#172343",
         backgroundColor: "#F5DEB3",
-        marginHorizontal: 15,
-        marginVertical: 20,
+        marginHorizontal: 5,
+        marginVertical: 5,
     },
     mt20: {
         marginTop: 20,
@@ -40,7 +40,16 @@ const styles = StyleSheet.create({
 export default function SearchListing () {
     const [MyData, setMyData] = useState<Object[] | null> ()
     const [MyInput, setMyInput] = useState('')
-    const [IsOwner, setIsOwner] = useState(false)
+    const [username, setUsername] = useState("")
+
+    useEffect(()=>{
+      getUsername()
+    },[])
+
+    async function getUsername(){
+      let {data, error} = await supabase.from("profiles").select("username").match({id: supabase.auth.session()?.user.id}).single()
+      setUsername(data.username);
+    }
 
     async function GetListingbyGroupName(input) {
       const { data, error } = await supabase
@@ -80,7 +89,7 @@ export default function SearchListing () {
 
       let { data, error } = await supabase
         .from('listings')
-        .select('id, all_members')
+        .select('id, all_members, members')
         .match({ id: SportIdKey })
         .single()
         if (error) {
@@ -90,7 +99,7 @@ export default function SearchListing () {
           console.log(data)
           let { error } = await supabase
             .from('listings')
-            .update({ all_members: [...data.all_members,user.id] },{ returning: "minimal" })
+            .update({ all_members: [...data.all_members,user.id], members: [...data.members,{uuid:user.id, username: username}] },{ returning: "minimal" })
             .match({ id: SportIdKey})
             .single();
             
@@ -160,7 +169,7 @@ export default function SearchListing () {
           throw(error)
         }
         else {
-          data.length ? setIsOwner(true) : setIsOwner(false)
+          return data.length ? true : false
         }
     }
 
@@ -168,12 +177,14 @@ export default function SearchListing () {
       const user = supabase.auth.user();
           if (!user) throw new Error("No user on the session!");
       
-      check_owner(SportIdKey)
+      let IsOwner = await check_owner(SportIdKey)
 
       const { data, error } = await supabase
         .from('member_list')
         .select('id, user_id, sport_id')
         .match({sport_id : SportIdKey, user_id : user.id})
+
+        console.log(data)
         if (error) {
           throw error;
         }

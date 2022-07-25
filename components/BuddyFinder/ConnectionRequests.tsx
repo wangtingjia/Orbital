@@ -1,10 +1,11 @@
-import { FlatList, View, Text, Button, Alert } from "react-native";
+import { FlatList, View, Text, Button, Alert, Dimensions } from "react-native";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { MyProfile } from "../Profile/Profile";
 import { SportsProfile } from "../Profile/SportsProfile";
 const Stack = createNativeStackNavigator();
+const dimensions = Dimensions.get("window")
 
 function ConnectionRequests({ navigation }) {
     const [connectionRequests, setConnectionRequests] = useState([]);
@@ -88,6 +89,7 @@ function ConnectionRequests({ navigation }) {
 
     return (
         <View>
+            {!connectionRequests.length && <View style={{height: dimensions.height-300, alignItems: "center", justifyContent: "center"}}><Text>You do not have any requests to connect at the moment</Text></View>}
             <FlatList
                 data={connectionRequests}
                 renderItem={({ item, index }) => (
@@ -108,8 +110,8 @@ export default function ConnectionRequestStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Connection Request" component={ConnectionRequests} options={{ headerShown: false }} />
-            <Stack.Screen name="User Profile" component={MyProfile} />
-            <Stack.Screen name="User Sport Interests" component={SportsProfile} />
+            <Stack.Screen name="User Profile" component={MyProfile}  options={{headerTopInsetEnabled: false}} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile}  options={{headerTopInsetEnabled: false}} />
         </Stack.Navigator>
     )
 }
