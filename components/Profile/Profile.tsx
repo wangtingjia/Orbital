@@ -1,4 +1,4 @@
-import { View, Text, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, Alert, StyleSheet, Image, ScrollView, Dimensions } from "react-native";
 import { Input, Button } from "react-native-elements"
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
@@ -12,6 +12,11 @@ import { NewsFeed } from "../NewsFeed/Feed";
 import Comments from "../NewsFeed/Comments";
 import AddSport from "./AddSport";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import {useHeaderHeight} from '@react-navigation/elements';
+
+const dimensions = Dimensions.get('window')
+
 const styles = StyleSheet.create({
     profileImage: {
         width: 200,
@@ -35,10 +40,15 @@ export function MyProfile({ route, navigation }) {
     const [biography, setBiography] = useState("");
     const [avatar_url, setAvatarUrl] = useState("");
     const [session, setSession] = useState<Session | null>(null);
+    const [currUser, setCurrUser] = useState("");
+
+    const btmBarHeight = useBottomTabBarHeight();
+    const headerHeight = useHeaderHeight();
 
     useEffect(() => {
         if (route.params.visitor) {
             getProfile(route.params.uuid);
+            getCurrUser(supabase.auth.user().id);
         } else {
             setSession(supabase.auth.session());
             if (session) getProfile("");
@@ -54,6 +64,12 @@ export function MyProfile({ route, navigation }) {
         });
         return unsubscribe;
     }, [navigation]);
+
+    async function getCurrUser(id){
+        let {data,error} = await supabase.from("profiles").select("username").match({id:id}).single();
+        setCurrUser(data.username);
+        return data.username;
+    }
 
     async function signOut() {
         supabase.auth.signOut();
@@ -93,7 +109,7 @@ export function MyProfile({ route, navigation }) {
             }
             let newConnectionRequest = {
                 userID: supabase.auth.user()?.id,
-                username: username,
+                username: currUser == '' ? await getCurrUser(supabase.auth.user()?.id) : currUser,
                 dateRequested: new Date(),
             }
             let newConnectionRequests = [...data.connection_requests, newConnectionRequest]
@@ -133,7 +149,7 @@ export function MyProfile({ route, navigation }) {
     }
 
     return (
-        <View style={[styles.container, { paddingBottom: 10 }]}>
+        <ScrollView style={[styles.container, { paddingBottom: 10, height: dimensions.height - btmBarHeight - headerHeight }]}>
             <View style={{ alignItems: 'center' }}><Image style={styles.profileImage} source={{ uri: avatar_url + "?" + new Date() || "https://i.stack.imgur.com/l60Hf.png" }} /></View>
             {!route.params.visitor && <View>
                 <Input label="Email" value={session?.user?.email} disabled
@@ -149,17 +165,17 @@ export function MyProfile({ route, navigation }) {
             </View>
             {!route.params.visitor &&
                 <View style={styles.container}>
-                    <View style={{ paddingBottom: 10 }}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", { id: supabase.auth.user().id, visitor: false })} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button style={{ paddingBottom: 10 }} title="Sign Out" onPress={() => signOut()} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button style={{ paddingBottom: 10 }} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button style={{ paddingBottom: 10 }} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", { id: supabase.auth.user().id, visitor: false })} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button style={{ paddingBottom: 10 }} title="Sign Out" onPress={() => signOut()} /></View>
                 </View>}
             {route.params.visitor &&
                 <View>
-                    <View style={{ paddingBottom: 10 }}><Button title="See Sports Interests"  onPress={() => navigation.navigate("User Sport Interests", { id: route.params.uuid, visitor: true })} /></View>
-                    <View style={{ paddingBottom: 10 }}><Button title="Send Connection Request" onPress={() => Connect(route.params.uuid)} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", { id: route.params.uuid, visitor: true })} /></View>
+                    <View style={{ paddingBottom: 10, marginHorizontal: 10 }}><Button title="Send Connection Request" onPress={() => Connect(route.params.uuid)} /></View>
                 </View>}
-        </View>
+        </ScrollView>
     )
 }
 

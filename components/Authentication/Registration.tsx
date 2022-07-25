@@ -3,7 +3,7 @@ import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../../lib/supabase'
 import { Button, Input } from 'react-native-elements'
 
-export default function Registration() {
+export default function Registration({navigation}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [password2, setPassword2] = useState('')
@@ -54,7 +54,7 @@ export default function Registration() {
         if (password == password2) {
             let success = await signUpWithEmail()
             console.log("Matches")
-            if (success) Alert.alert("Check your email for confirmation")
+            if (success) Alert.alert("Registration Successful!", "Check your email for confirmation before you are able to log in",[{text:"Okay",onPress:()=>navigation.goBack()}])
         }
         else {
             alert("Passwords do not match")
@@ -95,7 +95,7 @@ export default function Registration() {
                     autoCapitalize={'none'} 
                     autoCompleteType={undefined} />
             </View>
-            <View style={styles.verticallySpaced}>
+            <View style={[styles.verticallySpaced,{margin:10}]}>
                 <Button title="Sign up" disabled={loading} onPress={() => checkPasswords()} />
             </View>
         </View>

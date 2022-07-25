@@ -96,12 +96,12 @@ export default function PrivateChat({ route, navigation }) {
         const { data, error } = await supabase
             .from("messages")
             .delete().match({ id: itemID }).single();
-            console.log(data)
+        //console.log(data)
         setUpdated(!updated)
         toggleVisibility(-1)
     }
 
-    function toggleVisibility(itemID){
+    function toggleVisibility(itemID) {
         setSelectedMessage(itemID)
         setVisible(!visible)
     }
@@ -115,25 +115,39 @@ export default function PrivateChat({ route, navigation }) {
             throw (error)
         }
         data.reverse()
-        console.log(data)
+        //console.log(data)
         setMessages(data)
     }
     useEffect(() => {
+        const mySubscription = supabase
+            .from('messages')
+            .on('*', payload => {
+                getMessages(senderID, receiverID)
+                console.log("HERE")
+            })
+            .subscribe()
+
+            return () => {
+                supabase.removeSubscription(mySubscription)
+            }
+    }, [])
+
+    useEffect(()=>{
         getMessages(senderID, receiverID)
-    }, [updated])
+    },[])
 
     return (
         <View>
             <FlatList inverted={true} data={Messages} horizontal={false} style={{ height: dimensions.height - 200 }} renderItem={({ item, index }) => (
                 <View>
-                    <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+                    <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)} backdropStyle={{opacity:0.5}}>
                         <Text>Do you want to delete this message?</Text>
                         <Button title="Yes" onPress={() => deleteMessage(selectedMessage)} />
                         <Button title="No" onPress={() => toggleVisibility(-1)} />
                     </Overlay>
                     {item.sender_id == senderID ?
                         <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 9, flex: 1, alignSelf: 'flex-end', alignItems: 'flex-end', flexWrap: 'wrap', flexDirection: 'row', padding: 10, marginRight: 10, marginBottom: 1, backgroundColor: "green" }}>
-                            <TouchableHighlight onLongPress={() => {toggleVisibility(item.id) }} underlayColor="green"><Text style={{ color: "white" }}>{item.message}{'\n'}{item.created_at.substring(0, 10)} {item.created_at.substring(11, 16)} hours</Text></TouchableHighlight>
+                            <TouchableHighlight onLongPress={() => { toggleVisibility(item.id) }} underlayColor="green"><Text style={{ color: "white" }}>{item.message}{'\n'}{item.created_at.substring(0, 10)} {item.created_at.substring(11, 16)} hours</Text></TouchableHighlight>
                         </View>
                         :
                         <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 9, flex: 1, alignSelf: 'flex-start', flexWrap: 'wrap', flexDirection: 'row', padding: 10, marginLeft: 10, backgroundColor: "grey" }}>
@@ -141,15 +155,15 @@ export default function PrivateChat({ route, navigation }) {
                         </View>}
                 </View>
             )} />
-            <TextInput
+            <View style={{ marginHorizontal: 10 }}><TextInput
                 style={{ bottom: 0 }}
                 placeholder="your message"
                 value={UserMessage || ""}
                 onChangeText={(text) => SetUserMessage(text)} />
-            <Button
-                title={"Send message"}
-                onPress={() => sendMessage(senderID, receiverID)}
-            />
+                <Button
+                    title={"Send message"}
+                    onPress={() => sendMessage(senderID, receiverID)}
+                /></View>
         </View>
     )
 

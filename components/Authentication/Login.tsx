@@ -42,10 +42,10 @@ export default function Login({navigation}) {
                     autoCapitalize={'none'} 
                     autoCompleteType={undefined} />
             </View>
-            <View style={[styles.verticallySpaced, styles.mt20]}>
+            <View style={[styles.verticallySpaced, styles.mt20, {margin:10}]}>
                 <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
             </View>
-            <View>
+            <View style={[styles.verticallySpaced, styles.mt20, {margin:10}]}>
                 <Text>Do not have an Account?</Text>
                 <Button title="Sign up!" disabled={loading} onPress={()=> navigation.navigate("Registration")}/>
             </View>

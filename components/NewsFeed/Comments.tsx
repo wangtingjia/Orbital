@@ -83,7 +83,7 @@ function Comments(props) {
                     </View>
                 )}
             />
-            <View>
+            <View style={{marginHorizontal:10}}>
                 <Input placeholder="your comment" value={comment} autoCompleteType={undefined} onChangeText={(text) => setComment(text)} />
                 <Button title="Post comment" onPress={() => postComment()} />
             </View>

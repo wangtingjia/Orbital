@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList, TouchableHighlight, Dimensions } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { supabase } from '../../lib/supabase';
@@ -15,9 +15,11 @@ import { SportsProfile } from '../Profile/SportsProfile';
 import { container } from '../Style/Styles';
 import { EditProfile } from '../Profile/EditProfile';
 import AddSport from '../Profile/AddSport';
-
-const Stack = createNativeStackNavigator();
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/elements';
 const dimensions = Dimensions.get('window');
+const Stack = createNativeStackNavigator();
+
 const styles = StyleSheet.create({
   profileImage: {
     width: 362,
@@ -88,11 +90,16 @@ function AddPost(props) {
     if (error) throw error;
   }
 
+  const toggleCheck = () => {
+    setToggleCheckBox(!toggleCheckBox)
+    console.log(toggleCheckBox)
+  }
+
   async function postImage() {
     if (!formData) {
       Alert.alert("please choose an image");
     }
-    let path = (toggleCheckBox ? "private/" + supabase.auth.session()?.user.id + "/" : "public/") + fileName;
+    let path = "public/" + fileName;
     let { data, error } = await supabase.storage.from('images').upload(path, formData);
     let { data: publicURL } = await supabase.storage.from('images').getPublicUrl(path);
     if (data) {
@@ -102,7 +109,8 @@ function AddPost(props) {
         filepath: path,
         username: currUser == "" ? await getCurrUser() : currUser,
         created_at: new Date(),
-        filepublicURL: publicURL?.publicURL
+        filepublicURL: publicURL?.publicURL,
+        isPrivate: toggleCheckBox
       }
       let { data, error } = await supabase.from("image_posts").insert(updates).single();
       let newPostID = data.id;
@@ -122,17 +130,20 @@ function AddPost(props) {
   return (
     <View>
       <View>
-        <Image style={[styles.profileImage, {height: dimensions.width, width: dimensions.width}]} source={{ uri: image || "https://i.stack.imgur.com/l60Hf.png" }} />
+        <Image style={[styles.profileImage, { height: dimensions.width, width: dimensions.width }]} source={{ uri: image || "https://i.stack.imgur.com/l60Hf.png" }} />
         <Input label="Caption" value={caption} placeholder="Type your caption here"
           autoCompleteType={undefined} onChangeText={(text) => setCaption(text)} />
       </View>
-      <View style={{paddingBottom:10}}>
+      <View style={{ marginHorizontal: 10, marginBottom:10 }}>
         <Button title='Choose Photo/Video from Library' onPress={() => uploadImage('library')} />
       </View>
-      <View style={{paddingBottom:10}}>
+      <View style={{  marginHorizontal: 10 }}>
         <Button title='Take a Photo/Video' onPress={() => uploadImage('camera')} />
       </View>
-      <View style={{paddingBottom:10}}>
+      <View style={{  marginHorizontal: 10 }}>
+        <CheckBox title="Private Post? (Only your friends can see)" checked={toggleCheckBox} onPress={() => { toggleCheck() }} />
+      </View>
+      <View style={{ marginHorizontal: 10 }}>
         <Button title='Post' onPress={() => postImage()} />
       </View>
     </View>
@@ -145,11 +156,16 @@ export function NewsFeed({ navigation, route }) {
   const [visible, setVisible] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Object | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [friendList, setFriendList] = useState<Object[]>([]);
+  const tabBarHeight = useBottomTabBarHeight();
+  const topBarHeight = useHeaderHeight();
 
   useEffect(() => {
     getAllPosts();
+    getFriendList();
     const unsubscribe = navigation.addListener('focus', async () => {
       await getAllPosts();
+      await getFriendList();
     });
     return unsubscribe;
   }, [navigation]);
@@ -159,6 +175,14 @@ export function NewsFeed({ navigation, route }) {
       setVisible(true);
       setSelectedPost(item);
     }
+  }
+
+  const getFriendList = async () => {
+    const user = supabase.auth.user()
+    let { data, error } = await supabase.from("profiles").select("friend_list").match({ id: user.id }).single()
+    if (error) throw error
+    setFriendList(data.friend_list)
+    console.log(friendList)
   }
 
   const DeletePost = async () => {
@@ -177,12 +201,19 @@ export function NewsFeed({ navigation, route }) {
   const getAllPosts = async () => {
     const { data, error } = await supabase
       .from('image_posts')
-      .select('id, caption, filepath, uuid, username, mediatype, comments, filepublicURL')
+      .select('id, caption, filepath, uuid, username, mediatype, comments, filepublicURL, isPrivate')
     if (error) {
       throw error;
     }
     data.reverse();
-    setFeedPosts(data);
+    if (route.params.viewOwnPost) {
+      let feedData = data.filter((post) => {
+        return post.uuid == supabase.auth.user().id
+      })
+      setFeedPosts(feedData)
+    } else {
+      setFeedPosts(data);
+    }
   }
 
   return (
@@ -190,25 +221,34 @@ export function NewsFeed({ navigation, route }) {
       <View>
         <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
           <View style={{ paddingBottom: 10 }}>
-            <Text>Do you want to delete this post?</Text> 
+            <Text>Do you want to delete this post?</Text>
           </View>
           <View style={{ paddingBottom: 10 }}><Button title="Yes" onPress={() => DeletePost()} /></View>
           <View style={{ paddingBottom: 10 }}><Button title="No" onPress={() => setVisible(false)} /></View>
 
         </Overlay>
-        <View>
+        <View style={{margin:10}}>
           {route.params.viewOwnPost || <Button title="Create Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
         </View>
+        {!feedPosts.length && (route.params.viewOwnPost ? <View style={{ height: dimensions.height - 200, alignItems: "center", justifyContent: "center" }}>
+          <Text>You have not posted anything yet!</Text>
+          <TouchableHighlight underlayColor="grey" onPress={()=>{navigation.navigate("Feed")}}><Text style={{color:"blue"}}>Head over to Feed to post your first image!</Text></TouchableHighlight>
+        </View> :  <View style={{ height: dimensions.height - 200, alignItems: "center", justifyContent: "center" }}>
+          <Text>There are no posts yet!</Text>
+          <Text>Click on create post above to post an Image</Text>
+        </View>)}
+
       </View>
       <FlatList
-        style={{ height: dimensions.height - 155 }}
+        style={{ height: dimensions.height - tabBarHeight-topBarHeight-130}}
         data={feedPosts}
         numColumns={1}
         horizontal={false}
         renderItem={({ item, index }) => (
           <TouchableHighlight underlayColor="grey" key={index} onLongPress={() => showOverlay(item)} style={[container.horizontal, { alignItems: 'center', paddingBottom: 10 }]}>
             {route.params.viewOwnPost && item.uuid == supabase.auth.session()?.user.id ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> :
-              !route.params.viewOwnPost ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> : <View></View>}
+              !route.params.viewOwnPost ? (!item.isPrivate ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} />
+                : ((item.uuid == supabase.auth.session()?.user.id || friendList.filter((item) => { return item.userID == supabase.auth.session()?.user.id }).length)) ? <Post route={{ params: { item: item, currUser: currUser } }} navigation={navigation} /> : <View></View>) : <View></View>}
           </TouchableHighlight>
         )}
       />

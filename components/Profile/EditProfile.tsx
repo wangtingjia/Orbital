@@ -34,7 +34,7 @@ export function EditProfile({ route, navigation, update }) {
             }
         })();
     }, []);
-    
+
     async function uploadImage() {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -177,10 +177,10 @@ export function EditProfile({ route, navigation, update }) {
         <View>
             <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
                 <Text>Update Saved!</Text>
-                <Button title="ok" onPress={()=>setVisible(false)}/>
+                <Button title="ok" onPress={() => setVisible(false)} />
             </Overlay>
-            <View style={{alignItems:'center'}}>
-            <Image style={styles.profileImage} source={{ uri: avatar_url || "https://i.stack.imgur.com/l60Hf.png" }} />
+            <View style={{ alignItems: 'center' }}>
+                <Image style={styles.profileImage} source={{ uri: avatar_url || "https://i.stack.imgur.com/l60Hf.png" }} />
             </View>
             <View>
                 <Input label="Email" value={session?.user?.email}
@@ -194,14 +194,14 @@ export function EditProfile({ route, navigation, update }) {
                 <Input label="Biography" value={biography}
                     autoCompleteType={undefined} onChangeText={(text) => setBiography(text)} />
             </View>
-            <View style={{paddingBottom: 10}}>
+            <View style={{ paddingBottom: 10, marginHorizontal: 10 }}>
                 <Button
                     title={loading ? "Loading ..." : "Save Updates"}
                     onPress={() => updateProfile({ username, biography })}
                     disabled={loading}
                 />
             </View>
-            <View style={{paddingBottom: 10}}>
+            <View style={{ paddingBottom: 10, marginHorizontal: 10 }}>
                 <Button
                     title="Upload Profile Photo"
                     onPress={() => uploadImage()} />
