@@ -16,7 +16,10 @@ const Tab = createMaterialTopTabNavigator();
 
 function Listings(){
   return (
-    <Tab.Navigator> 
+    <Tab.Navigator tabBarOptions={{
+      style: {
+        height: 50,
+     }}}> 
       <Tab.Screen name="Initiate activity" component ={CreateListing} />
       <Tab.Screen name="Search activities" component ={SearchListing} />
       <Tab.Screen name="My activities" component={MyListing} />

@@ -34,7 +34,7 @@ export function MemberInGroup({route, navigation}) {
     
     if (Members) {
         return (
-            <ScrollView>
+            <ScrollView style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {
                 Members.all_members.map((data, index) => {
                     return (

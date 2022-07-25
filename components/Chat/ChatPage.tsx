@@ -11,8 +11,7 @@ import { renderNode } from 'react-native-elements/dist/helpers';
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 40,
-        padding: 12,
+        flex: 1
     },
     verticallySpaced: {
         paddingTop: 5,
@@ -22,27 +21,39 @@ const styles = StyleSheet.create({
         color: "grey"
     },
     sender_data: {
-        paddingTop: 3,
-        paddingBottom: 3,
-        paddingRight: 0,
+        paddingTop: 1,
+        paddingBottom: 1,
         alignSelf: "stretch",
         fontWeight: "bold",
         borderRadius: 4,
         borderColor: "#172343",
         backgroundColor: "#F5DEB3",
-        marginHorizontal: 15,
-        marginVertical: 20,
+        marginHorizontal: 5,
+        marginVertical: 5,
+    },
+    row_data: {
+        paddingTop: 3,
+        paddingBottom: 3,
+        fontWeight: "bold",
+        borderRadius: 4,
+        borderColor: "#172343",
+        backgroundColor: "#ADD8E6",
+        marginHorizontal: 10,
+        marginVertical: 10,
+        justifyContent: "center",
+        alightItems: "center",
+        flex: 1
     },
     receiver_data: {
-        paddingTop: 10,
-        paddingBottom: 10,
+        paddingTop: 1,
+        paddingBottom: 1,
         alignSelf: "stretch",
         fontWeight: "bold",
         borderRadius: 4,
         borderColor: "#172343",
         backgroundColor: "#FFC0CB",
-        marginHorizontal: 15,
-        marginVertical: 20,
+        marginHorizontal: 5,
+        marginVertical: 5,
     },
     mt20: {
         marginTop: 20,
@@ -101,9 +112,12 @@ export default function PrivateChat ({route, navigation}) {
 
     if (Messages) {
         return (
-            <ScrollView>
-                <Text> { receiver_name }</Text>
-                <ScrollView>
+            <View>
+            <ScrollView  contentContainerStyle={{flexGrow: 20}}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 3,
+                    paddingBottom: 3,borderRadius: 4,borderColor: "#172343",backgroundColor: "#ADD8E6",marginHorizontal: 10,marginVertical: 10,}}>
+                    <Text> { receiver_name }</Text>
+                </View>
                     {
                         Messages.map((data, index) => {
                             if (data.sender_id == senderID) {
@@ -127,23 +141,27 @@ export default function PrivateChat ({route, navigation}) {
                             
                         })
                     }
-                </ScrollView>
-                <TextInput 
-                    style = {{bottom: 0}}
-                    placeholder = "your message"
-                    value={UserMessage || ""}
-                    onChangeText={(text) => SetUserMessage(text)} />
-                <Button
-                    title={"Send message"}
-                    onPress={() => sendMessage(senderID, receiverID)}
-                />
             </ScrollView>
+            <View style ={{bottom:0, position:'abosolute'}}>
+                    <TextInput 
+                            style = {{bottom: 0}}
+                            placeholder = "your message"
+                            value={UserMessage || ""}
+                            onChangeText={(text) => SetUserMessage(text)} />
+                    <Button
+                            title={"Send message"}
+                            onPress={() => sendMessage(senderID, receiverID)}
+                    />
+                    </View>
+            </View>
         )
     }
     else {
         return (
             <View>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text> send your first message </Text>
+                </View>
                 <TextInput 
                     style = {{bottom: 0}}
                     placeholder = "your message"

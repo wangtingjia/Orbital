@@ -151,17 +151,17 @@ return (
             <View style={styles.verticallySpaced}>
             <Text> Private group ?  {isPrivate} </Text>
             <Text> </Text> 
-            <Button title = 'Select yes' onPress={() => setisPrivate('yes')} />
-            <Button title = 'Select no' onPress={() => setisPrivate('no')} />
+            <View style={{paddingBottom:10}}><Button title = 'Select yes' onPress={() => setisPrivate('yes')} /></View>
+            <View style={{paddingBottom:10}}><Button title = 'Select no' onPress={() => setisPrivate('no')} /></View>
             <Text> </Text>
             </View>
     
             <View>
-            <Button
+            <View style={{paddingBottom:10}}><Button
                 title={loading ? "Loading ..." : "Create listing"}
                 onPress={() => confirm_create({ GroupName, Sport, Description, GroupSize, isPrivate})}
                 disabled={loading}
-            />
+            /></View>
             </View>
     
         </ScrollView>

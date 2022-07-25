@@ -22,7 +22,10 @@ export default function MyListing(){
     console.log(supabase.auth.session())
   }
   return (
-        <Tab.Navigator> 
+        <Tab.Navigator tabBarOptions={{
+          style: {
+            height: 50,
+         }}}> 
           <Tab.Screen name="Member Listings" component ={MemberListing} />
           <Tab.Screen name="Your Listings" component={OwnerStackScreen} />
         </Tab.Navigator>
@@ -32,8 +35,8 @@ export default function MyListing(){
 function OwnerStackScreen() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Owner Listings" component={OwnerListing}/>
-      <Stack.Screen name="Member Details" component={MemberInGroup}/>
+      <Stack.Screen options={{headerShown: false}} name="Owner Listings" component={OwnerListing}/>
+      <Stack.Screen options={{headerShown: false}} name="Member Details" component={MemberInGroup}/>
       <Stack.Screen name="Member profile" component={MyProfile}/>
       <Stack.Screen name="User Sport Interests" component={SportsProfile} />
     </Stack.Navigator>

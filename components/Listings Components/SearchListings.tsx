@@ -197,9 +197,9 @@ export default function SearchListing () {
               value={MyInput || ""}
               onChangeText={(text) => setMyInput(text)}
               autoCompleteType={undefined} />
-              <Button title = 'Search by groupname' onPress = {() => GetListingbyGroupName(MyInput)}/>
-              <Button title = 'Search by sport ' onPress = {() => GetListingbySport(MyInput)}/>
-              <Button title = 'Show all listings' onPress = {() => GetAllListing()}/>
+              <View style={{paddingBottom:10}}><Button title = 'Search by groupname' onPress = {() => GetListingbyGroupName(MyInput)}/></View>
+              <View style={{paddingBottom:10}}><Button title = 'Search by sport ' onPress = {() => GetListingbySport(MyInput)}/></View>
+              <View style={{paddingBottom:10}}><Button title = 'Show all listings' onPress = {() => GetAllListing()}/></View>
           </View>
           {
           MyData.map((data, index) => {

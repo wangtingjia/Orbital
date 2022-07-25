@@ -55,6 +55,7 @@ function DisplayAllChats({navigation}) {
         console.log(buddyList)
     }
     return (
+        <View style={styles.row_data}>
         <ScrollView>
             <FlatList
                 data={buddyList}
@@ -65,14 +66,15 @@ function DisplayAllChats({navigation}) {
                     </View>
                 )}/>
         </ScrollView>
+        </View>
     )
 }
 
 export default function AllChats () {
     return (
-        <Stack.Navigator> 
+        <Stack.Navigator>  
             <Stack.Screen name="All chats" component={DisplayAllChats} />
-            <Stack.Screen name="Private chat" component={PrivateChat} />
+            <Stack.Screen options={{headerTitle: 'All Chats', headerBackVisible:true}} name="Private chat" component={PrivateChat} />
         </Stack.Navigator>
     )
 }

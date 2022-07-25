@@ -1,4 +1,4 @@
-import { View, Text, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, Alert, StyleSheet, Image, ScrollView } from "react-native";
 import { Input, Button } from "react-native-elements"
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
@@ -103,12 +103,12 @@ export function MyProfile({ route, navigation }) {
                     autoCompleteType={undefined} />
             </View>
             {!route.params.visitor &&
-                <View style={styles.container}>
+                <ScrollView style={styles.container}>
                     <View style={{paddingBottom: 10}}><Button title="Edit Profile" onPress={() => navigation.navigate("Edit Profile")} /></View>
                     <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="See My Posts" onPress={() => navigation.navigate("My Posts", { viewOwnPost: true })} /></View>
                     <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="See Sports Interests" onPress={() => navigation.navigate("Sports Interests", {id: supabase.auth.user().id, visitor: false})} /></View>
                     <View style={{paddingBottom: 10}}><Button style={{paddingBottom: 10}} title="Sign Out" onPress={() => signOut()} /></View>
-                </View>}
+                </ScrollView>}
                 {route.params.visitor && <Button title="See Sports Interests" onPress={() => navigation.navigate("User Sport Interests", {id:route.params.uuid, visitor:true})} />}
         </View>
     )
