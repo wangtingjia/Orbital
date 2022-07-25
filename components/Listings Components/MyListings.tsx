@@ -1,19 +1,12 @@
-import { useEffect, useReducer, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView, Alert, TouchableHighlight, FlatList } from "react-native";
-import { Input } from "react-native-elements";
-import { NavigationContainer } from '@react-navigation/native';
-import LoginSignupScreen from '../Authentication/LoginSignupScreen'
-import { Session, ApiError } from "@supabase/supabase-js";
+import { useEffect, useState } from 'react'
+import { View, StyleSheet, Button, Text, Alert, TouchableHighlight, FlatList } from "react-native";
 import { supabase } from '../../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import * as ReactDOM from 'react-dom';
-import { renderNode } from 'react-native-elements/dist/helpers';
-import { confirmAlert } from 'react-confirm-alert';
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
-import { MemberInGroup } from './ListofMembers';
+import { MemberInGroup, JoinRequests } from './ListofMembers';
 import { MyProfile } from '../Profile/Profile';
 import { SportsProfile } from '../Profile/SportsProfile';
-import { useTheme } from 'react-navigation';
+
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -37,6 +30,7 @@ function OwnerStackScreen() {
       <Stack.Screen name="Member Details" component={MemberInGroup} options={{ headerTopInsetEnabled: false }} />
       <Stack.Screen name="Member Profile" component={MyProfile} options={{ headerTopInsetEnabled: false }} />
       <Stack.Screen name="User Sport Interests" component={SportsProfile} options={{ headerTopInsetEnabled: false }} />
+      <Stack.Screen name="Join Requests" component={JoinRequests} options={{ headerTopInsetEnabled: false }} />
     </Stack.Navigator>
   )
 }
@@ -61,7 +55,7 @@ function MemberListing({ navigation }) {
 
     const { data, error } = await supabase
       .from('listings')
-      .select('id, GroupName, Description, all_members, owner_id')
+      .select('id, GroupName, Description, all_members, owner_id, isPrivate')
       .contains('all_members', [user.id])
     if (error) {
       throw error;
@@ -120,7 +114,7 @@ function MemberListing({ navigation }) {
         <View>
           {item.owner_id != supabase.auth.user().id && <TouchableHighlight underlayColor="#F5DEB3"
             onLongPress={() => leaveGroupConfirmation(item)}
-            onPress={() => { navigation.navigate('Member Details', { input_id: item.id, owner: false }) }} style={styles.row_data} key={index}>
+            onPress={() => { navigation.navigate('Member Details', { input_id: item.id, owner: false, is_private: item.isPrivate }) }} style={styles.row_data} key={index}>
             <View>
               <Text> GroupName: {item.GroupName} </Text>
               <Text> Sport: {item.Sport} </Text>
@@ -164,7 +158,7 @@ function OwnerListing({ navigation }) {
 
     const { data, error } = await supabase
       .from('listings')
-      .select('id, owner_id, GroupName, Sport, Description')
+      .select('id, owner_id, GroupName, Sport, Description, isPrivate')
       .match({ owner_id: user.id })
     if (error) {
       throw error;
@@ -195,7 +189,7 @@ function OwnerListing({ navigation }) {
   return (
     <View>
       <FlatList data={MyData} renderItem={({ item, index }) => (
-        <TouchableHighlight underlayColor="#F5DEB3" onPress={() => navigation.navigate('Member Details', { input_id: item.id, owner: true })}
+        <TouchableHighlight underlayColor="#F5DEB3" onPress={() => navigation.navigate('Member Details', { input_id: item.id, owner: true, is_private: item.isPrivate })}
         onLongPress={()=>{confirm_delete(item)}}>
           <View style={styles.row_data} key={index}>
             <Text> GroupName: {item.GroupName} </Text>
