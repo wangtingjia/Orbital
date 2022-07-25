@@ -230,10 +230,13 @@ export function NewsFeed({ navigation, route }) {
         <View style={{margin:10}}>
           {route.params.viewOwnPost || <Button title="Create Post" onPress={() => navigation.navigate("Add Post", { currUser: currUser })} />}
         </View>
-        {!feedPosts.length && route.params.viewOwnPost && <View style={{ height: dimensions.height - 200, alignItems: "center", justifyContent: "center" }}>
+        {!feedPosts.length && (route.params.viewOwnPost ? <View style={{ height: dimensions.height - 200, alignItems: "center", justifyContent: "center" }}>
           <Text>You have not posted anything yet!</Text>
           <TouchableHighlight underlayColor="grey" onPress={()=>{navigation.navigate("Feed")}}><Text style={{color:"blue"}}>Head over to Feed to post your first image!</Text></TouchableHighlight>
-        </View>}
+        </View> :  <View style={{ height: dimensions.height - 200, alignItems: "center", justifyContent: "center" }}>
+          <Text>There are no posts yet!</Text>
+          <Text>Click on create post above to post an Image</Text>
+        </View>)}
 
       </View>
       <FlatList
