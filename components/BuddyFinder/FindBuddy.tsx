@@ -2,7 +2,7 @@ import { View, Button, Alert, FlatList, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { Dropdown } from "react-native-element-dropdown";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { MyProfile } from "../Profile/Profile";
 import { SportsProfile } from "../Profile/SportsProfile";
 
@@ -123,8 +123,8 @@ export default function FindBuddyStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Search" component={FindBuddy} options={{ headerShown: false }} />
-            <Stack.Screen name="User Profile" component={MyProfile} />
-            <Stack.Screen name="User Sport Interests" component={SportsProfile} />
+            <Stack.Screen name="User Profile" component={MyProfile} options={{headerTopInsetEnabled: false}} />
+            <Stack.Screen name="User Sport Interests" component={SportsProfile} options={{headerTopInsetEnabled: false}}/>
         </Stack.Navigator>
     )
 }

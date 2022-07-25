@@ -10,6 +10,8 @@ import * as ReactDOM from 'react-dom';
 import { renderNode } from 'react-native-elements/dist/helpers';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PrivateChat from './ChatPage'
+import { RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3 } from 'expo-av/build/Audio';
+import { Routes } from 'react-router-dom';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,7 +48,11 @@ function DisplayAllChats({navigation}) {
 
     useEffect(() => {
         GetBuddyList();
-    }, [])
+        const unsubscribe = navigation.addListener('focus', async () => {
+            await GetBuddyList();
+          });
+          return unsubscribe;
+    }, [navigation])
 
     async function GetBuddyList () {
         const { data, error } = await supabase.from("profiles").select("friend_list").match({ id: supabase.auth.user()?.id }).single();
@@ -60,9 +66,8 @@ function DisplayAllChats({navigation}) {
             <FlatList
                 data={buddyList}
                 renderItem={({ item, index }) => (
-                    <View>
-                        <Text>{item.username}</Text>
-                        <Button title="Enter Chat" onPress={() => navigation.navigate("Private chat", {receiver : item.userID, name : item.username})} />
+                    <View style={{padding: 10, backgroundColor:"beige", alignItems:'center'}}>
+                        <TouchableHighlight underlayColor={"beige"} onPress={()=>{navigation.navigate("Private chat", {receiver : item.userID, name : item.username})}}><Text>{item.username}</Text></TouchableHighlight>
                     </View>
                 )}/>
         </ScrollView>
@@ -74,7 +79,7 @@ export default function AllChats () {
     return (
         <Stack.Navigator>  
             <Stack.Screen name="All chats" component={DisplayAllChats} />
-            <Stack.Screen options={{headerTitle: 'All Chats', headerBackVisible:true}} name="Private chat" component={PrivateChat} />
+            <Stack.Screen name="Private chat" component={PrivateChat} options={({route})=>({title:route.params.name})}/>
         </Stack.Navigator>
     )
 }

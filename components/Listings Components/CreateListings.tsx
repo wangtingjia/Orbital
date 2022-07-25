@@ -43,10 +43,19 @@ export default function CreateListing() {
     const [Description, setDescription] = useState('')
     const [GroupSize, setGroupSize] = useState('0')
     const [isPrivate, setisPrivate] = useState('')
-    
+    const [username, setUsername] = useState('')
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(false)
     
+    useEffect(()=>{
+        getUsername()
+    },[])
+
+    async function getUsername(){
+        const {data,error} = await supabase.from("profiles").select("username").match({id:supabase.auth.user()?.id}).single()
+        setUsername(data.username);
+    }
+
     async function generateListing({GroupName,Sport,Description,GroupSize, isPrivate
      }: {
         GroupName: string;
@@ -61,7 +70,7 @@ export default function CreateListing() {
         if (!user) throw new Error("No user on the session!");
             
         console.log(user.id)
-    
+
         const updates = {
             owner_id: user.id,
             GroupName,
@@ -69,7 +78,8 @@ export default function CreateListing() {
             Description,
             GroupSize,
             isPrivate,
-            all_members: [user.id]
+            all_members : [user.id],
+            members: [{uuid: user.id, username:username}]
         };
 
         if (GroupName == "") {
@@ -95,6 +105,14 @@ export default function CreateListing() {
 }
 
 function confirm_create({ GroupName, Sport, Description, GroupSize, isPrivate}) {
+    if (!GroupName || !Sport || !Description || !GroupSize || !isPrivate){
+        return (
+            Alert.alert("Fields cannot be empty")
+        )
+    }
+    if (GroupSize < 1){
+        return (Alert.alert("Group size cannot be less than 1"))
+    }
     return (
         Alert.alert(
           "Confirm Create",

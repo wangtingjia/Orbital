@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { View, StyleSheet, Button, Text, ScrollView, Alert, TextInput } from "react-native";
-import { Input } from "react-native-elements";
+import { View, StyleSheet, Button, Text, ScrollView, Alert, TextInput, FlatList, TouchableHighlight, Dimensions } from "react-native";
+import { Input, Overlay } from "react-native-elements";
 import { NavigationContainer } from '@react-navigation/native';
 import LoginSignupScreen from '../Authentication/LoginSignupScreen'
-import {Session, ApiError} from "@supabase/supabase-js";
+import { Session, ApiError } from "@supabase/supabase-js";
 import { supabase } from '../../lib/supabase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import * as ReactDOM from 'react-dom';
 import { renderNode } from 'react-native-elements/dist/helpers';
+
+const dimensions = Dimensions.get("window")
 
 const styles = StyleSheet.create({
     container: {
@@ -63,14 +65,17 @@ const styles = StyleSheet.create({
     }
 });
 
-export default function PrivateChat ({route, navigation}) {
+export default function PrivateChat({ route, navigation }) {
     const [UserMessage, SetUserMessage] = useState('')
-    const [Messages, setMessages] = useState<Object[] | null> ()
+    const [Messages, setMessages] = useState<Object[] | null>()
+    const [updated, setUpdated] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const [selectedMessage, setSelectedMessage] = useState(-1);
 
     const user = supabase.auth.user();
     if (!user) {
         Alert.alert('no user on session')
-        throw(console.error())
+        throw (console.error())
     }
 
     const receiverID = route.params.receiver
@@ -79,99 +84,85 @@ export default function PrivateChat ({route, navigation}) {
 
     async function sendMessage(sender, receiverID) {
         const new_message = {
-            created_at : new Date(),
-            sender_id : sender,
-            receiver_id : receiverID,
-            message : UserMessage
+            created_at: new Date(),
+            sender_id: sender,
+            receiver_id: receiverID,
+            message: UserMessage
         }
         if (UserMessage == '') {
             Alert.alert("no empty messages")
         }
         else {
             let { error } = await supabase
-            .from("messages")
-            .upsert(new_message, { returning: "minimal" });
+                .from("messages")
+                .upsert(new_message, { returning: "minimal" });
             if (error) {
                 throw error;
             }
         }
+        SetUserMessage("")
+        setUpdated(!updated)
+    }
+    async function deleteMessage(itemID) {
+        const { data, error } = await supabase
+            .from("messages")
+            .delete().match({ id: itemID }).single();
+            console.log(data)
+        setUpdated(!updated)
+        toggleVisibility(-1)
+    }
+
+    function toggleVisibility(itemID){
+        setSelectedMessage(itemID)
+        setVisible(!visible)
     }
 
     async function getMessages(senderID, receiverID) {
-        const {data, error} = await supabase
+        const { data, error } = await supabase
             .from("messages")
-            .select("created_at, sender_id, receiver_id, message")
+            .select("created_at, sender_id, receiver_id, message, id")
             .or(`and(sender_id.eq.${senderID},receiver_id.eq.${receiverID}),and(sender_id.eq.${receiverID},receiver_id.eq.${senderID})`)
         if (error) {
-            throw(error)
+            throw (error)
         }
+        data.reverse()
+        console.log(data)
         setMessages(data)
     }
+    useEffect(() => {
+        getMessages(senderID, receiverID)
+    }, [updated])
 
-    getMessages(senderID, receiverID)
+    return (
+        <View>
+            <FlatList inverted={true} data={Messages} horizontal={false} style={{ height: dimensions.height - 200 }} renderItem={({ item, index }) => (
+                <View>
+                    <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+                        <Text>Do you want to delete this message?</Text>
+                        <Button title="Yes" onPress={() => deleteMessage(selectedMessage)} />
+                        <Button title="No" onPress={() => toggleVisibility(-1)} />
+                    </Overlay>
+                    {item.sender_id == senderID ?
+                        <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 9, flex: 1, alignSelf: 'flex-end', alignItems: 'flex-end', flexWrap: 'wrap', flexDirection: 'row', padding: 10, marginRight: 10, marginBottom: 1, backgroundColor: "green" }}>
+                            <TouchableHighlight onLongPress={() => {toggleVisibility(item.id) }} underlayColor="green"><Text style={{ color: "white" }}>{item.message}{'\n'}{item.created_at.substring(0, 10)} {item.created_at.substring(11, 16)} hours</Text></TouchableHighlight>
+                        </View>
+                        :
+                        <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 9, flex: 1, alignSelf: 'flex-start', flexWrap: 'wrap', flexDirection: 'row', padding: 10, marginLeft: 10, backgroundColor: "grey" }}>
+                            <TouchableHighlight onPress={() => { }} underlayColor="grey"><Text style={{ color: "white" }}>{item.message}{'\n'}{item.created_at.substring(0, 10)} {item.created_at.substring(11, 16)} hours</Text></TouchableHighlight>
+                        </View>}
+                </View>
+            )} />
+            <TextInput
+                style={{ bottom: 0 }}
+                placeholder="your message"
+                value={UserMessage || ""}
+                onChangeText={(text) => SetUserMessage(text)} />
+            <Button
+                title={"Send message"}
+                onPress={() => sendMessage(senderID, receiverID)}
+            />
+        </View>
+    )
 
-    if (Messages) {
-        return (
-            <View>
-            <ScrollView  contentContainerStyle={{flexGrow: 20}}>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 3,
-                    paddingBottom: 3,borderRadius: 4,borderColor: "#172343",backgroundColor: "#ADD8E6",marginHorizontal: 10,marginVertical: 10,}}>
-                    <Text> { receiver_name }</Text>
-                </View>
-                    {
-                        Messages.map((data, index) => {
-                            if (data.sender_id == senderID) {
-                                return (
-                                    <View style={styles.sender_data} key={index}> 
-                                    <Text> You </Text>
-                                    <Text> {data.created_at} </Text>
-                                    <Text> {data.message} </Text>
-                                    </View>
-                                )
-                            }
-                            else {
-                                return (
-                                    <View style={styles.receiver_data} key={index}> 
-                                    <Text> {receiver_name} </Text>
-                                    <Text> {data.created_at} </Text>
-                                    <Text> {data.message} </Text>
-                                    </View>
-                                )
-                            }
-                            
-                        })
-                    }
-            </ScrollView>
-            <View style ={{bottom:0, position:'abosolute'}}>
-                    <TextInput 
-                            style = {{bottom: 0}}
-                            placeholder = "your message"
-                            value={UserMessage || ""}
-                            onChangeText={(text) => SetUserMessage(text)} />
-                    <Button
-                            title={"Send message"}
-                            onPress={() => sendMessage(senderID, receiverID)}
-                    />
-                    </View>
-            </View>
-        )
-    }
-    else {
-        return (
-            <View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text> send your first message </Text>
-                </View>
-                <TextInput 
-                    style = {{bottom: 0}}
-                    placeholder = "your message"
-                    value={UserMessage || ""}
-                    onChangeText={(text) => SetUserMessage(text)} />
-                <Button
-                    title={"Send message"}
-                    onPress={() => sendMessage(senderID, receiverID)}
-                />
-            </View>
-        )
-    }
+
 }

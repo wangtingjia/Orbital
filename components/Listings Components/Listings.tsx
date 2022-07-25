@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
       borderRadius: 4,
       borderColor: "#172343",
       backgroundColor: "#F5DEB3",
-      marginHorizontal: 15,
-      marginVertical: 20,
+      marginHorizontal: 5,
+      marginVertical: 5,
   },
   mt20: {
       marginTop: 20,

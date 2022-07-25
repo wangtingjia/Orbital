@@ -34,7 +34,7 @@ export function EditProfile({ route, navigation, update }) {
             }
         })();
     }, []);
-
+    
     async function uploadImage() {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -142,7 +142,7 @@ export function EditProfile({ route, navigation, update }) {
         } finally {
             setLoading(false);
             setVisible(true);
-            update(false);
+            route.params.update(false);
         }
     }
 

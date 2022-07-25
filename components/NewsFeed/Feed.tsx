@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { View, Button, Text, StyleSheet, Image, Alert, ScrollView, FlatList, TouchableHighlight, Dimensions } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { supabase } from '../../lib/supabase';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { useState } from 'react';
 import { Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,6 +13,8 @@ import { MyProfile } from '../Profile/Profile';
 import { Session } from '@supabase/supabase-js';
 import { SportsProfile } from '../Profile/SportsProfile';
 import { container } from '../Style/Styles';
+import { EditProfile } from '../Profile/EditProfile';
+import AddSport from '../Profile/AddSport';
 
 const Stack = createNativeStackNavigator();
 const dimensions = Dimensions.get('window');
@@ -120,20 +122,17 @@ function AddPost(props) {
   return (
     <View>
       <View>
-        <Image style={styles.profileImage} source={{ uri: image || "https://i.stack.imgur.com/l60Hf.png" }} />
-        <Input label="Caption" value={caption}
+        <Image style={[styles.profileImage, {height: dimensions.width, width: dimensions.width}]} source={{ uri: image || "https://i.stack.imgur.com/l60Hf.png" }} />
+        <Input label="Caption" value={caption} placeholder="Type your caption here"
           autoCompleteType={undefined} onChangeText={(text) => setCaption(text)} />
       </View>
-      <View>
-        <Button title='Choose Photo from Library' onPress={() => uploadImage('library')} />
+      <View style={{paddingBottom:10}}>
+        <Button title='Choose Photo/Video from Library' onPress={() => uploadImage('library')} />
       </View>
-      <View>
-        <Button title='Take a Photo' onPress={() => uploadImage('camera')} />
+      <View style={{paddingBottom:10}}>
+        <Button title='Take a Photo/Video' onPress={() => uploadImage('camera')} />
       </View>
-      <View>
-        <CheckBox title={"Private Post? (Only your friends can see)"} checked={toggleCheckBox} onPress={() => setToggleCheckBox(!toggleCheckBox)} />
-      </View>
-      <View>
+      <View style={{paddingBottom:10}}>
         <Button title='Post' onPress={() => postImage()} />
       </View>
     </View>
@@ -228,6 +227,10 @@ export function FeedStack({ navigation }) {
       <Stack.Screen name="Comments" component={Comments} />
       <Stack.Screen name="User Profile" component={MyProfile} initialParams={{ visitor: true }} />
       <Stack.Screen name="User Sport Interests" component={SportsProfile} />
+      <Stack.Screen name="Edit Profile" component={EditProfile} />
+      <Stack.Screen name="My Posts" component={NewsFeed} />
+      <Stack.Screen name="Add Sports" component={AddSport} />
+      <Stack.Screen name="Sports Interests" component={SportsProfile} />
     </Stack.Navigator>
   )
 }
